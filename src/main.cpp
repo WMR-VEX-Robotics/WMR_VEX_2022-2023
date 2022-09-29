@@ -15,8 +15,20 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
-// define your global instances of motors and other devices here
+/// A global instance of brain used for printing to the V5 Brain screen
+brain  Brain;
 
+// VEXcode device constructors
+controller Controller1 = controller(primary);
+motor LeftFront = motor(PORT1, ratio36_1, false);
+motor LeftRear = motor(PORT2, ratio18_1, false);
+motor RightFront = motor(PORT3, ratio18_1, false);
+motor RightRear = motor(PORT4, ratio18_1, false);
+pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
+
+
+// define variable for remote controller enable/disable
+bool RemoteControlCodeEnabled = true;
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
@@ -28,7 +40,6 @@ competition Competition;
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -44,6 +55,8 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+
+ 
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
@@ -60,10 +73,10 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
+  
   // User control code here, inside the loop
   while (1) {
 
-    LeftFront.spin(forward);
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
