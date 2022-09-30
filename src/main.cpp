@@ -9,14 +9,13 @@
 
 #include "vex.h"
 
-
 using namespace vex;
 
 // A global instance of competition
 competition Competition;
 
 /// A global instance of brain used for printing to the V5 Brain screen
-brain  Brain;
+brain Brain;
 
 // VEXcode device constructors
 controller Controller1 = controller(primary);
@@ -25,7 +24,6 @@ motor LeftRear = motor(PORT2, ratio18_1, false);
 motor RightFront = motor(PORT3, ratio18_1, false);
 motor RightRear = motor(PORT4, ratio18_1, false);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
-
 
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
@@ -56,7 +54,6 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
- 
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
@@ -73,7 +70,7 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  
+
   // User control code here, inside the loop
   while (1) {
 
