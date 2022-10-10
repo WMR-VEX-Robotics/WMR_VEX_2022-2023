@@ -12,6 +12,7 @@ motor Top_Left = motor(PORT1, ratio6_1, false);
 motor Top_Right = motor(PORT2, ratio6_1, false);
 motor Bottom_Left = motor(PORT3, ratio6_1, false);
 motor Bottom_Right = motor(PORT4, ratio6_1, false);
+motor Vacuum = motor(PORT5, ratio6_1, false);
 controller Controller1 = controller(primary);
 
 // VEXcode generated functions

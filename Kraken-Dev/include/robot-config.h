@@ -7,6 +7,7 @@ extern motor Top_Left;
 extern motor Top_Right;
 extern motor Bottom_Left;
 extern motor Bottom_Right;
+extern motor Vacuum;
 extern controller Controller1;
 
 /**
