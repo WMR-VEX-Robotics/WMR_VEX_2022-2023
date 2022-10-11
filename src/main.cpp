@@ -227,10 +227,6 @@ void flywheel_config(void){
   break_Factors;
 }
 
-void flywheel_run(void){
-  
-}
-
 void vacuum_check(void){
   if (Vacuum.isSpinning() == true){
     Brain.Screen.print("Vacuum Check");
