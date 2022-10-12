@@ -26,6 +26,7 @@ using namespace vex;
 
  int userDrive;
  int gameMode;
+ int breaking;
 //Game Mode 0 = pregame. Game Mode 1 = Autonomous. Game Mode 2 = User Control.
  int vSpin;
  int bF;
@@ -232,13 +233,13 @@ void vacuum_check(void){
     Brain.Screen.print("Vacuum Check");
     vSpin = 1;
   } else {
+    vSpin = 0;
     Brain.Screen.print("HELP ERROR 3: VACUUM NOT STARTED");
     while(Vacuum.isSpinning() == false){
       for (int i = 1; i <= 10; ++i) {
         Controller1.Screen.print("SEND HELP");
         wait(1, seconds);
         Controller1.Screen.clearScreen();
-        vSpin = 0;
       }
     }
   }
@@ -265,12 +266,50 @@ void xdrive_user_control(void){
   Bottom_Left.spin(forward, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   Top_Right.spin(forward, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   Bottom_Right.spin(forward, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  if (Controller1.ButtonA.pressing()){
+  if (Controller1.ButtonA.pressing() == true){
+    Controller1.Screen.print("MLOCK");
+    wait(1, seconds);
+    Controller1.Screen.clearScreen();
+    while (Controller1.ButtonA.pressing() == true){
+      sudden_stop;
+    }
+  }
+  if (Controller1.ButtonX.pressing() == true){
+    coast_to_stop;
+  }
+}
+
+void coast_to_stop(void){
+  Top_Left.stop(coast);
+  Top_Right.stop(coast);
+  Bottom_Left.stop(coast);
+  Bottom_Right.stop(coast);
+}
+
+void sudden_stop(void){
     Top_Left.stop(brake);
     Top_Right.stop(brake);
     Bottom_Left.stop(brake);
     Bottom_Right.stop(brake);
-  }
+    if (Top_Left.isSpinning() == true){
+      breaking == 0;
+    }
+    if (Top_Right.isSpinning() == true){
+      breaking == 0;
+    }
+    if (Bottom_Left.isSpinning() == true){
+      breaking == 0;
+    }
+    if (Bottom_Right.isSpinning() == true){
+      breaking == 0;
+    }
+    breaking = 1;
+    if (breaking == 0){
+      Top_Left.stop(brake);
+      Top_Right.stop(brake);
+      Bottom_Left.stop(brake);
+      Bottom_Right.stop(brake);
+    }
 }
 
 void user_mode(void){
@@ -294,9 +333,15 @@ void user_mode(void){
   while(userDrive == 1){
     xdrive_user_control;
     if (Controller1.ButtonR1.pressing()){
-      Flywheel.spin(forward, 3200, rpm);
+      
     }
   }
+}
+
+void flywheel_launch(void){
+  Flywheel.spin(forward, 3200, rpm);
+  wait(1, seconds);
+  Flywheel.stop(brake);
 }
 
 void temperature_grab(void){
