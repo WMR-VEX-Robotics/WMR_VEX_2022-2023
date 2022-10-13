@@ -27,8 +27,7 @@ void usercontrol(void)
   int yPos;
   Brain.Screen.setPenColor(black);
   Brain.Screen.setFillColor(red);
-  Brain.
-  
+
   while(1)
   {
     Brain.Screen.clearScreen();
@@ -58,7 +57,7 @@ int main()
   comp.drivercontrol(usercontrol);
   pre_auton();
 
-  while (true)
+  while(true)
   {
     wait(100, msec);
   }
