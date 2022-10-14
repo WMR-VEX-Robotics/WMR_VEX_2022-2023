@@ -25,6 +25,7 @@ vision Vision5 = vision (PORT5, 44, Vision5__DISK, Vision5__DISK2, Vision5__DISK
 /*vex-vision-config:end*/
 motor Vacuum = motor(PORT6, ratio6_1, false);
 motor Flywheel = motor(PORT7, ratio6_1, false);
+limit MagCap = limit(Brain.ThreeWirePort.A);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

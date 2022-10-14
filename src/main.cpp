@@ -33,6 +33,8 @@ using namespace vex;
  int bS;
  int bT;
  int bFo;
+ int stoppingReason;
+ int detectedTaskchecker;
 
  void breakFactors(void){
   if (bF == 1){
@@ -139,6 +141,7 @@ void setup_x_drive(void) {
   wait(1, seconds);
   Controller1.Screen.clearScreen();
   //same as current but with power
+  breakFactors();
 }
 
 void vacuum_configuration(void) {
@@ -163,9 +166,8 @@ void vacuum_configuration(void) {
   }
 
   Vacuum.spinToPosition(0, degrees, true);
+  breakFactors();
 }
-
-
 
 void rvacuum_check(void){
   if (vSpin == 0){
@@ -201,6 +203,7 @@ void flywheel_calibration(void){
     Flywheel.stop(brake);
     Flywheel.setPosition(0, degrees);
   }
+  breakFactors();
 }
 
 void flywheel_config(void){
@@ -221,6 +224,7 @@ void flywheel_config(void){
     Controller1.Screen.clearScreen();
   }
   flywheel_calibration();
+  breakFactors();
 }
 
 void vacuum_check(void){
@@ -230,17 +234,18 @@ void vacuum_check(void){
   } else {
     Brain.Screen.print("HELP ERROR 3: VACUUM NOT STARTED");
     while(Vacuum.isSpinning() == false){
+      vSpin = 0;
       for (int i = 1; i <= 10; ++i) {
         Controller1.Screen.print("SEND HELP");
         wait(1, seconds);
         Controller1.Screen.clearScreen();
-        vSpin = 0;
       }
     }
   }
   if (vSpin == 0){
     rvacuum_check();
   }
+  breakFactors();
 }
 
 void auton_mode(void){
@@ -251,7 +256,269 @@ void auton_mode(void){
   }
   Vacuum.spin(forward, 1200, rpm);
   vacuum_check();
+  autonblueMovement();
+  //bookmark1
+  wait(15, seconds);
+  Top_Left.stop(brake);
+  Top_Right.stop(brake);
+  Bottom_Left.stop(brake);
+  Bottom_Right.stop(brake);
+  Flywheel.stop(brake);
+  Vacuum.stop(brake);
   gameMode = 2;
+}
+
+void autonblueMovement(void){
+  stoppingReason = 0;
+  detectedTaskchecker = 0;
+  while(detectedTaskchecker == 0){
+    Top_Left.spin(forward);
+    Top_Right.spin(forward);
+    Bottom_Left.spin(forward);
+    Bottom_Right.spin(forward);
+  }
+  if (Vision5.takeSnapshot((1, 2127, 2473, 2300, -5239, -4555, -4897, 3, 0), 1)){
+    detectedTaskchecker = 1;
+     while(stoppingReason == 0){
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(reverse, 3200, rpm);
+     }
+    if (MagCap.pressing() == true){
+     stoppingReason = 1;
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward);
+     Top_Right.spin(forward);
+     Bottom_Left.spin(forward);
+     Bottom_Right.spin(forward);
+      if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
+        //sticky note for changing when red_auton is produced
+       Top_Left.stop(brake);
+       Top_Right.stop(brake);
+       Bottom_Left.stop(brake);
+       Bottom_Right.stop(brake);
+       for (int i = 1; i <= 3; i++){
+        flywheelFire();
+       }
+      }
+    } else {
+      stoppingReason = 0;
+      detectedTaskchecker = 0;
+    }
+  }
+   if (Vision5.takeSnapshot((2, -1, 627, 313, -4755, -4337, -4546, 3, 0), 1)){
+    detectedTaskchecker = 1;
+     while(stoppingReason == 0){
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(reverse, 3200, rpm);
+     }
+    if (MagCap.pressing() == true){
+     stoppingReason = 1;
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward);
+     Top_Right.spin(forward);
+     Bottom_Left.spin(forward);
+     Bottom_Right.spin(forward);
+      if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
+        //sticky note for changing when red_auton is produced
+       Top_Left.stop(brake);
+       Top_Right.stop(brake);
+       Bottom_Left.stop(brake);
+       Bottom_Right.stop(brake);
+       for (int i = 1; i <= 3; i++){
+        flywheelFire();
+       }
+      }
+    } else {
+      stoppingReason = 0;
+      detectedTaskchecker = 0;
+    }
+  }
+   if (Vision5.takeSnapshot((3, 3059, 3601, 3330, -4511, -3537, -4024, 3, 0), 1)){
+    detectedTaskchecker = 1;
+     while(stoppingReason == 0){
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(reverse, 3200, rpm);
+     }
+    if (MagCap.pressing() == true){
+     stoppingReason = 1;
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward);
+     Top_Right.spin(forward);
+     Bottom_Left.spin(forward);
+     Bottom_Right.spin(forward);
+      if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
+        //sticky note for changing when red_auton is produced
+       Top_Left.stop(brake);
+       Top_Right.stop(brake);
+       Bottom_Left.stop(brake);
+       Bottom_Right.stop(brake);
+       for (int i = 1; i <= 3; i++){
+        flywheelFire();
+       }
+      }
+    } else {
+      stoppingReason = 0;
+      detectedTaskchecker = 0;
+    }
+  }
+}
+
+void autonredMovement(void){
+  stoppingReason = 0;
+  detectedTaskchecker = 0;
+  while(detectedTaskchecker == 0){
+    Top_Left.spin(forward);
+    Top_Right.spin(forward);
+    Bottom_Left.spin(forward);
+    Bottom_Right.spin(forward);
+  }
+  if (Vision5.takeSnapshot((1, 2127, 2473, 2300, -5239, -4555, -4897, 3, 0), 1)){
+    detectedTaskchecker = 1;
+     while(stoppingReason == 0){
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(reverse, 3200, rpm);
+     }
+    if (MagCap.pressing() == true){
+     stoppingReason = 1;
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward);
+     Top_Right.spin(forward);
+     Bottom_Left.spin(forward);
+     Bottom_Right.spin(forward);
+      if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
+        //sticky note for changing when red_auton is produced
+       Top_Left.stop(brake);
+       Top_Right.stop(brake);
+       Bottom_Left.stop(brake);
+       Bottom_Right.stop(brake);
+       for (int i = 1; i <= 3; i++){
+        flywheelFire();
+       }
+      }
+    } else {
+      stoppingReason = 0;
+      detectedTaskchecker = 0;
+    }
+  }
+   if (Vision5.takeSnapshot((2, -1, 627, 313, -4755, -4337, -4546, 3, 0), 1)){
+    detectedTaskchecker = 1;
+     while(stoppingReason == 0){
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(reverse, 3200, rpm);
+     }
+    if (MagCap.pressing() == true){
+     stoppingReason = 1;
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward);
+     Top_Right.spin(forward);
+     Bottom_Left.spin(forward);
+     Bottom_Right.spin(forward);
+      if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
+        //sticky note for changing when red_auton is produced
+       Top_Left.stop(brake);
+       Top_Right.stop(brake);
+       Bottom_Left.stop(brake);
+       Bottom_Right.stop(brake);
+       for (int i = 1; i <= 3; i++){
+        flywheelFire();
+       }
+      }
+    } else {
+      stoppingReason = 0;
+      detectedTaskchecker = 0;
+    }
+  }
+   if (Vision5.takeSnapshot((3, 3059, 3601, 3330, -4511, -3537, -4024, 3, 0), 1)){
+    detectedTaskchecker = 1;
+     while(stoppingReason == 0){
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(reverse, 3200, rpm);
+     }
+    if (MagCap.pressing() == true){
+     stoppingReason = 1;
+     Top_Left.stop(brake);
+     Top_Right.stop(brake);
+     Bottom_Left.stop(brake);
+     Bottom_Right.stop(brake);
+     Top_Left.spin(forward);
+     Top_Right.spin(forward);
+     Bottom_Left.spin(forward);
+     Bottom_Right.spin(forward);
+      if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
+        //sticky note for changing when red_auton is produced
+       Top_Left.stop(brake);
+       Top_Right.stop(brake);
+       Bottom_Left.stop(brake);
+       Bottom_Right.stop(brake);
+       for (int i = 1; i <= 3; i++){
+        flywheelFire();
+       }
+      }
+    } else {
+      stoppingReason = 0;
+      detectedTaskchecker = 0;
+    }
+  }
+}
+
+void flywheelFire(void){
+  Flywheel.spin(forward, 3200, rpm);
+  wait(50, msec);
+  Flywheel.stop(brake);
+  Flywheel.spin(reverse, 3200, rpm);
+  wait(50, msec);
+  Flywheel.stop(brake);
 }
 
 void xdrive_user_control(void){
@@ -262,11 +529,15 @@ void xdrive_user_control(void){
   Top_Right.spin(forward, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   Bottom_Right.spin(forward, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   if (Controller1.ButtonA.pressing()){
-    Top_Left.stop(brake);
-    Top_Right.stop(brake);
-    Bottom_Left.stop(brake);
-    Bottom_Right.stop(brake);
+    fullBrake();
   }
+}
+
+void fullBrake(void){
+  Top_Left.stop(brake);
+  Top_Right.stop(brake);
+  Bottom_Left.stop(brake);
+  Bottom_Right.stop(brake);
 }
 
 void user_mode(void){
@@ -343,4 +614,4 @@ int main() {
   execute_intial_config();
   auton_mode();
   user_mode();
-}
+} //I have finally and unequivocally hit my breaking point and am now internally screeching. 

@@ -20,6 +20,7 @@ extern signature Vision5__DISK7;
 extern vision Vision5;
 extern motor Vacuum;
 extern motor Flywheel;
+extern limit MagCap;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
