@@ -246,7 +246,7 @@ void vacuum_check(void){
     rvacuum_check();
   }
   breakFactors();
-}
+} // build this to test
 
 void auton_mode(void){
   if (gameMode == 1) {
@@ -267,7 +267,7 @@ void auton_mode(void){
   Vacuum.stop(brake);
   gameMode = 2;
 }
-
+//for streamline methods for auton code.
 void autonblueMovement(void){
   stoppingReason = 0;
   detectedTaskchecker = 0;
@@ -279,11 +279,14 @@ void autonblueMovement(void){
   }
   if (Vision5.takeSnapshot((1, 2127, 2473, 2300, -5239, -4555, -4897, 3, 0), 1)){
     detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      while(stoppingReason == 0){
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
      Top_Left.spin(forward, 3200, rpm);
      Bottom_Left.spin(forward, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
@@ -291,16 +294,17 @@ void autonblueMovement(void){
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
+     for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      Top_Left.spin(forward);
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
       if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
-        //sticky note for changing when red_auton is produced
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -316,11 +320,14 @@ void autonblueMovement(void){
   }
    if (Vision5.takeSnapshot((2, -1, 627, 313, -4755, -4337, -4546, 3, 0), 1)){
     detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      while(stoppingReason == 0){
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
      Top_Left.spin(forward, 3200, rpm);
      Bottom_Left.spin(forward, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
@@ -328,16 +335,17 @@ void autonblueMovement(void){
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
+     for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      Top_Left.spin(forward);
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
       if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
-        //sticky note for changing when red_auton is produced
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -353,11 +361,14 @@ void autonblueMovement(void){
   }
    if (Vision5.takeSnapshot((3, 3059, 3601, 3330, -4511, -3537, -4024, 3, 0), 1)){
     detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      while(stoppingReason == 0){
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
      Top_Left.spin(forward, 3200, rpm);
      Bottom_Left.spin(forward, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
@@ -365,16 +376,17 @@ void autonblueMovement(void){
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
+     for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      Top_Left.spin(forward);
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
       if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
-        //sticky note for changing when red_auton is produced
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -401,11 +413,14 @@ void autonredMovement(void){
   }
   if (Vision5.takeSnapshot((1, 2127, 2473, 2300, -5239, -4555, -4897, 3, 0), 1)){
     detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      while(stoppingReason == 0){
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
      Top_Left.spin(forward, 3200, rpm);
      Bottom_Left.spin(forward, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
@@ -413,16 +428,17 @@ void autonredMovement(void){
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
+     for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      Top_Left.spin(forward);
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
       if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
-        //sticky note for changing when red_auton is produced
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -438,11 +454,14 @@ void autonredMovement(void){
   }
    if (Vision5.takeSnapshot((2, -1, 627, 313, -4755, -4337, -4546, 3, 0), 1)){
     detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      while(stoppingReason == 0){
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
      Top_Left.spin(forward, 3200, rpm);
      Bottom_Left.spin(forward, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
@@ -450,16 +469,17 @@ void autonredMovement(void){
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      Top_Left.spin(forward);
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
       if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
-        //sticky note for changing when red_auton is produced
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -475,11 +495,14 @@ void autonredMovement(void){
   }
    if (Vision5.takeSnapshot((3, 3059, 3601, 3330, -4511, -3537, -4024, 3, 0), 1)){
     detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      while(stoppingReason == 0){
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
      Top_Left.spin(forward, 3200, rpm);
      Bottom_Left.spin(forward, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
@@ -487,16 +510,17 @@ void autonredMovement(void){
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
-     Top_Left.stop(brake);
-     Top_Right.stop(brake);
-     Bottom_Left.stop(brake);
-     Bottom_Right.stop(brake);
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
      Top_Left.spin(forward);
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
       if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
-        //sticky note for changing when red_auton is produced
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -530,7 +554,7 @@ void xdrive_user_control(void){
   Bottom_Right.spin(forward, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   if (Controller1.ButtonA.pressing()){
     fullBrake();
-  }
+  } //impliment soft braking.
 }
 
 void fullBrake(void){
@@ -599,6 +623,7 @@ void execute_intial_config(void){
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+  //gameMode set by controller should only be used in the case of debugging.
   if (Controller1.ButtonDown.pressing()){
     gameMode = 0;
   }
