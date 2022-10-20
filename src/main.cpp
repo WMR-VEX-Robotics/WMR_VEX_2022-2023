@@ -19,10 +19,10 @@ brain Brain;
 
 // VEXcode device constructors
 controller Controller1 = controller(primary);
-motor LeftFront = motor(PORT1, ratio36_1, false);
-motor LeftRear = motor(PORT2, ratio18_1, false);
-motor RightFront = motor(PORT3, ratio18_1, false);
-motor RightRear = motor(PORT4, ratio18_1, false);
+motor LeftFront = motor(PORT1, ratio36_1, true);
+motor LeftRear = motor(PORT5, ratio36_1, false);
+motor RightFront = motor(PORT3, ratio36_1, false);
+motor RightRear = motor(PORT4, ratio36_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
@@ -46,6 +46,13 @@ void RobotReverse() {
   };
 };
 
+void StopAllChasis() {
+  LeftFront.stop(hold);
+  LeftRear.stop(hold);
+  RightFront.stop(hold);
+  RightRear.stop(hold);
+}
+
 void pre_auton(void) {
 
 }
@@ -57,10 +64,13 @@ void autonomous(void) {
 void usercontrol(void) {
   Brain.Screen.clearLine();
   while (1) {
-    LeftFront.spin(forward, Controller1.Axis3.position() * RobotReverseVariable, percent);
-    RightFront.spin(forward, Controller1.Axis3.position() * RobotReverseVariable, percent);
-    LeftRear.spin(forward, Controller1.Axis3.position() * RobotReverseVariable, percent);
-    RightRear.spin(forward, Controller1.Axis3.position() * RobotReverseVariable, percent);
+    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
+      StopAllChasis();
+    }
     if (Controller1.ButtonL1.pressing()) {
       RobotReverse();
     }
