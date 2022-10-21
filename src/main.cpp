@@ -172,7 +172,7 @@ void vacuum_configuration(void) {
 void rvacuum_check(void){
   if (vSpin == 0){
     Vacuum.stop();
-    wait(10, seconds);
+    wait(5, seconds);
     Vacuum.spin(forward, 1200, rpm);
   }
 }
@@ -231,11 +231,12 @@ void vacuum_check(void){
   if (Vacuum.isSpinning() == true){
     Brain.Screen.print("Vacuum Check");
     vSpin = 1;
-  } else {
+  } 
+  if (Vacuum.isSpinning() == false) {
     Brain.Screen.print("HELP ERROR 3: VACUUM NOT STARTED");
     while(Vacuum.isSpinning() == false){
       vSpin = 0;
-      for (int i = 1; i <= 10; ++i) {
+      for (int i = 1; i <= 11; ++i) {
         Controller1.Screen.print("SEND HELP");
         wait(1, seconds);
         Controller1.Screen.clearScreen();
@@ -550,8 +551,8 @@ void xdrive_user_control(void){
   double velocityControl2 = (velocityControl1 / 200);
   Top_Left.spin(forward, (((-Controller1.Axis3.position()) - Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   Bottom_Left.spin(forward, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  Top_Right.spin(forward, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  Bottom_Right.spin(forward, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
+  Top_Right.spin(reverse, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
+  Bottom_Right.spin(reverse, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   if (Controller1.ButtonA.pressing()){
     fullBrake();
   } //impliment soft braking.
@@ -571,6 +572,7 @@ void user_mode(void){
       Controller1.Screen.clearScreen();
   }
   userDrive = 0;
+  Vacuum.spin(forward, 1200, rpm);
   if (Vacuum.isSpinning() == false){
     Vacuum.spin(forward, 1200, rpm);
     Brain.Screen.print("Restarting Vacuum...");
@@ -580,6 +582,9 @@ void user_mode(void){
   } else{
     Brain.Screen.print("Rechecking Vacuum...");
     vacuum_check();
+  }
+   if (Controller1.ButtonB.pressing()){
+    temperature_grab();
   }
   userDrive = 1;
   while(userDrive == 1){
@@ -624,18 +629,16 @@ int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   //gameMode set by controller should only be used in the case of debugging.
-  if (Controller1.ButtonDown.pressing()){
-    gameMode = 0;
-  }
-  if (Controller1.ButtonLeft.pressing()){
-    gameMode = 1;
-  }
-  if (Controller1.ButtonRight.pressing()){
-    gameMode = 2;
-  }
-  if (Controller1.ButtonB.pressing()){
-    temperature_grab();
-  }
+  gameMode = 0;
+  execute_intial_config();
+  auton_mode();
+  user_mode();
+} //I have finally and unequivocally hit my breaking point and am now internally screeching. 
+int main() {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  vexcodeInit();
+  //gameMode set by controller should only be used in the case of debugging.
+  gameMode = 0;
   execute_intial_config();
   auton_mode();
   user_mode();
