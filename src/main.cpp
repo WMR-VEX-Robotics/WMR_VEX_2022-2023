@@ -289,9 +289,9 @@ void autonblueMovement(void){
       }
      while(stoppingReason == 0){
      Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
@@ -330,9 +330,9 @@ void autonblueMovement(void){
       }
      while(stoppingReason == 0){
      Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
@@ -371,9 +371,9 @@ void autonblueMovement(void){
       }
      while(stoppingReason == 0){
      Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
@@ -423,9 +423,9 @@ void autonredMovement(void){
       }
      while(stoppingReason == 0){
      Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
@@ -464,9 +464,9 @@ void autonredMovement(void){
       }
      while(stoppingReason == 0){
      Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
@@ -505,9 +505,9 @@ void autonredMovement(void){
       }
      while(stoppingReason == 0){
      Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
      Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
      }
     if (MagCap.pressing() == true){
      stoppingReason = 1;
@@ -550,12 +550,21 @@ void xdrive_user_control(void){
   double velocityControl1 = (Controller1.Axis2.position() + 100);
   double velocityControl2 = (velocityControl1 / 200);
   Top_Left.spin(forward, (((-Controller1.Axis3.position()) - Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  Bottom_Left.spin(forward, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  Top_Right.spin(reverse, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
+  Bottom_Left.spin(reverse, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
+  Top_Right.spin(forward, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
   Bottom_Right.spin(reverse, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  if (Controller1.ButtonA.pressing()){
+  if (Controller1.ButtonY.pressing()){
     fullBrake();
   } //impliment soft braking.
+ if (Controller.Button.R2.pressing()){
+  Top_Left.spin(forward, 50, volt);
+  Bottom_Left.spin(reverse, 50, volt);
+  Top_Right.spin(forward, 50, volt);
+  Top_Right.spin(reverse, 50, volt);
+ }
+  if (Controller1.ButtonB.pressing()){
+    temperature_grab();
+  }
 }
 
 void fullBrake(void){
@@ -579,12 +588,9 @@ void user_mode(void){
     vacuum_check();
     wait(1, seconds);
     Brain.Screen.clearScreen();
-  } else{
+  } else {
     Brain.Screen.print("Rechecking Vacuum...");
     vacuum_check();
-  }
-   if (Controller1.ButtonB.pressing()){
-    temperature_grab();
   }
   userDrive = 1;
   while(userDrive == 1){
@@ -594,6 +600,21 @@ void user_mode(void){
     }
   }
 }
+
+ void drive_only_UM(void){
+   if (gameMode == 3) {
+     Controller1.Screen.print("User");
+      wait(50, msec);
+      Controller1.Screen.clearScreen();
+  }
+  userDrive = 1;
+  while(userDrive == 1){
+    xdrive_user_control();
+    if (Controller1.ButtonR1.pressing()){
+      Flywheel.spin(forward, 3200, rpm);
+    }
+  }
+ }
 
 void temperature_grab(void){
   Brain.Screen.print(Top_Left.temperature(celsius));
@@ -624,22 +645,49 @@ void execute_intial_config(void){
   gameMode = 1;
 }
 //^^^This is some heavy abstraction however this makes it all work so don't forget it.
+// below is true competition main.
+//int main() {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  //vexcodeInit();
+  //execute_intial_config();
+  //auton_mode();
+  //user_mode();
+//} //I have finally and unequivocally hit my breaking point and am now internally screeching.
+// above is true competition main.
+ 
+ //The following 3 mains are for debugging purposes only.
+ 
+//int main() {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  //vexcodeInit();
+  //gameMode set by controller should only be used in the case of debugging.
+  //gameMode = 0;
+  //execute_intial_config();
+  //auton_mode();
+  //user_mode();
+//}
+//int main() {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  //vexcodeInit();
+  //gameMode set by controller should only be used in the case of debugging.
+  //gameMode = 1;
+  //execute_intial_config();
+  //auton_mode();
+  //user_mode();
+//}
+ //int main() {
+   //Initializing Robot Configuration. DO NOT REMOVE!
+ // vexcodeInit();
+  //gameMode set by controller should only be used in the case of debugging.
+  //gameMode = 2;
+  //execute_intial_config();
+  //auton_mode();
+  //user_mode();
+//}
 
+//below is drive only main
 int main() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  vexcodeInit();
-  //gameMode set by controller should only be used in the case of debugging.
-  gameMode = 0;
-  execute_intial_config();
-  auton_mode();
-  user_mode();
-} //I have finally and unequivocally hit my breaking point and am now internally screeching. 
-int main() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  vexcodeInit();
-  //gameMode set by controller should only be used in the case of debugging.
-  gameMode = 0;
-  execute_intial_config();
-  auton_mode();
-  user_mode();
-} //I have finally and unequivocally hit my breaking point and am now internally screeching. 
+ gameMode = 3;
+ drive_only_UM();
+}
+ 
