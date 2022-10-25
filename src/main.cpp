@@ -8,6 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include <cmath>
 
 using namespace vex;
 
@@ -68,7 +69,7 @@ void usercontrol(void) {
     RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
     LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
     RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
+    if(abs(Controller1.Axis3.value()) - abs(Controller1.Axis1.value()) == 0) {
       StopAllChasis();
     }
     if (Controller1.ButtonL1.pressing()) {
