@@ -18,6 +18,7 @@
 // Vision5              vision        5               
 // Vacuum               motor         6               
 // Flywheel             motor         7               
+// MagCap               limit         A               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -35,6 +36,7 @@ using namespace vex;
  int bFo;
  int stoppingReason;
  int detectedTaskchecker;
+ int fifteenSecUpYet;
 
  void breakFactors(void){
   if (bF == 1){
@@ -248,26 +250,15 @@ void vacuum_check(void){
   }
   breakFactors();
 } // build this to test
-
-void auton_mode(void){
-  if (gameMode == 1) {
-      Controller1.Screen.print("Auton");
-      wait(50, msec);
-      Controller1.Screen.clearScreen();
-  }
-  Vacuum.spin(forward, 1200, rpm);
-  vacuum_check();
-  autonblueMovement();
-  //bookmark1
-  wait(15, seconds);
-  Top_Left.stop(brake);
-  Top_Right.stop(brake);
-  Bottom_Left.stop(brake);
-  Bottom_Right.stop(brake);
+void flywheelFire(void){
+  Flywheel.spin(forward, 3200, rpm);
+  wait(50, msec);
   Flywheel.stop(brake);
-  Vacuum.stop(brake);
-  gameMode = 2;
+  Flywheel.spin(reverse, 3200, rpm);
+  wait(50, msec);
+  Flywheel.stop(brake);
 }
+
 //for streamline methods for auton code.
 void autonblueMovement(void){
   stoppingReason = 0;
@@ -278,7 +269,7 @@ void autonblueMovement(void){
     Bottom_Left.spin(forward);
     Bottom_Right.spin(forward);
   }
-  if (Vision5.takeSnapshot((1, 2127, 2473, 2300, -5239, -4555, -4897, 3, 0), 1)){
+  if (Vision5.takeSnapshot(Vision5__DISK) == true){
     detectedTaskchecker = 1;
     stoppingReason = 0;
     for (int i = 1; i < 2; i++){
@@ -305,7 +296,7 @@ void autonblueMovement(void){
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
+      if (Vision5.takeSnapshot(Vision5__BLUENET) == true){
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -319,7 +310,7 @@ void autonblueMovement(void){
       detectedTaskchecker = 0;
     }
   }
-   if (Vision5.takeSnapshot((2, -1, 627, 313, -4755, -4337, -4546, 3, 0), 1)){
+   if (Vision5.takeSnapshot(Vision5__DISK3) == true){
     detectedTaskchecker = 1;
     stoppingReason = 0;
     for (int i = 1; i < 2; i++){
@@ -346,7 +337,7 @@ void autonblueMovement(void){
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
+      if (Vision5.takeSnapshot(Vision5__BLUENET) == true){
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -360,7 +351,7 @@ void autonblueMovement(void){
       detectedTaskchecker = 0;
     }
   }
-   if (Vision5.takeSnapshot((3, 3059, 3601, 3330, -4511, -3537, -4024, 3, 0), 1)){
+   if (Vision5.takeSnapshot(Vision5__DISK6) == true){
     detectedTaskchecker = 1;
     stoppingReason = 0;
     for (int i = 1; i < 2; i++){
@@ -387,7 +378,7 @@ void autonblueMovement(void){
      Top_Right.spin(forward);
      Bottom_Left.spin(forward);
      Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot((4, -2629, -2009, -2319, 8013, 11397, 9705, 3, 0), 1)){
+      if (Vision5.takeSnapshot(Vision5__BLUENET) == true){
        Top_Left.stop(brake);
        Top_Right.stop(brake);
        Bottom_Left.stop(brake);
@@ -537,41 +528,133 @@ void autonredMovement(void){
   }
 }
 
-void flywheelFire(void){
-  Flywheel.spin(forward, 3200, rpm);
-  wait(50, msec);
-  Flywheel.stop(brake);
-  Flywheel.spin(reverse, 3200, rpm);
-  wait(50, msec);
-  Flywheel.stop(brake);
-}
-
-void xdrive_user_control(void){
-  double velocityControl1 = (Controller1.Axis2.position() + 100);
-  double velocityControl2 = (velocityControl1 / 200);
-  Top_Left.spin(forward, (((-Controller1.Axis3.position()) - Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  Bottom_Left.spin(reverse, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  Top_Right.spin(forward, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  Bottom_Right.spin(reverse, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, percent);
-  if (Controller1.ButtonY.pressing()){
-    fullBrake();
-  } //impliment soft braking.
- if (Controller.Button.R2.pressing()){
-  Top_Left.spin(forward, 50, volt);
-  Bottom_Left.spin(reverse, 50, volt);
-  Top_Right.spin(forward, 50, volt);
-  Top_Right.spin(reverse, 50, volt);
- }
-  if (Controller1.ButtonB.pressing()){
-    temperature_grab();
+void auton_modepreliminary(void){
+stoppingReason = 0;
+  detectedTaskchecker = 0;
+  while(detectedTaskchecker == 0){
+    Top_Left.spin(forward, 3200, rpm);
+    Top_Right.spin(forward, 3200, rpm);
+    Bottom_Left.spin(forward, 3200, rpm);
+    Bottom_Right.spin(forward, 3200, rpm);
+  }
+  if (Vision5.takeSnapshot(Vision5__DISK) == true){
+    detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
+     while(stoppingReason == 0){
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
+     }
+   
+  }
+   if (Vision5.takeSnapshot(Vision5__DISK3) == true){
+    detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
+     while(stoppingReason == 0){
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
+     }
+   }
+   if (Vision5.takeSnapshot(Vision5__DISK6) == true){
+    detectedTaskchecker = 1;
+    stoppingReason = 0;
+    for (int i = 1; i < 2; i++){
+        Top_Left.stop(brake);
+        Top_Right.stop(brake);
+        Bottom_Left.stop(brake);
+        Bottom_Right.stop(brake);
+      }
+     while(stoppingReason == 0){
+     Top_Left.spin(forward, 3200, rpm);
+     Bottom_Left.spin(reverse, 3200, rpm);
+     Bottom_Right.spin(reverse, 3200, rpm);
+     Top_Right.spin(forward, 3200, rpm);
+     }
+   
   }
 }
+
+void auton_mode(void){
+  if (gameMode == 1) {
+      Controller1.Screen.print("Auton");
+      wait(50, msec);
+      Controller1.Screen.clearScreen();
+  }
+  //Vacuum.spin(forward, 1200, rpm);
+  //vacuum_check();
+  fifteenSecUpYet = 0;
+  while (fifteenSecUpYet == 0){
+     auton_modepreliminary();
+  }
+  //bookmark1
+  wait(15, seconds);
+  fifteenSecUpYet = 1;
+  Top_Left.stop(brake);
+  Top_Right.stop(brake);
+  Bottom_Left.stop(brake);
+  Bottom_Right.stop(brake);
+  //Flywheel.stop(brake);
+  //Vacuum.stop(brake);
+  gameMode = 2;
+}
+
 
 void fullBrake(void){
   Top_Left.stop(brake);
   Top_Right.stop(brake);
   Bottom_Left.stop(brake);
   Bottom_Right.stop(brake);
+}
+void temperature_grab(void){
+  Brain.Screen.print(Top_Left.temperature(celsius));
+  Brain.Screen.setCursor(2, 1);
+  Brain.Screen.print(Top_Right.temperature(celsius));
+  Brain.Screen.setCursor(3, 1);
+  Brain.Screen.print(Bottom_Left.temperature(celsius));
+  Brain.Screen.setCursor(4, 1);
+  Brain.Screen.print(Bottom_Right.temperature(celsius));
+  Brain.Screen.setCursor(5, 1);
+  Brain.Screen.print(Vacuum.temperature(celsius));
+  Brain.Screen.setCursor(6, 1);
+  Brain.Screen.print(Flywheel.temperature(celsius));
+  wait(20, seconds);
+  Brain.Screen.clearScreen();
+}
+
+void xdrive_user_control(void){
+  double velocityControl1 = (Controller1.Axis2.position() + 100);
+  double velocityControl2 = (velocityControl1 / 200);
+  Top_Left.spin(reverse, (((-Controller1.Axis3.position()) - Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
+  Bottom_Left.spin(forward, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
+  Top_Right.spin(reverse, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2,volt);
+  Bottom_Right.spin(forward, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
+  if (Controller1.ButtonY.pressing()){
+    fullBrake();
+  } //impliment soft braking.
+ if (Controller1.ButtonR2.pressing()){
+  Top_Left.spin(reverse, 50, volt);
+  Bottom_Left.spin(forward, 50, volt);
+  Bottom_Right.spin(reverse, 50, volt);
+  Top_Right.spin(forward, 50, volt);
+ }
+  if (Controller1.ButtonB.pressing()){
+    temperature_grab();
+  }
 }
 
 void user_mode(void){
@@ -616,22 +699,6 @@ void user_mode(void){
   }
  }
 
-void temperature_grab(void){
-  Brain.Screen.print(Top_Left.temperature(celsius));
-  Brain.Screen.setCursor(2, 1);
-  Brain.Screen.print(Top_Right.temperature(celsius));
-  Brain.Screen.setCursor(3, 1);
-  Brain.Screen.print(Bottom_Left.temperature(celsius));
-  Brain.Screen.setCursor(4, 1);
-  Brain.Screen.print(Bottom_Right.temperature(celsius));
-  Brain.Screen.setCursor(5, 1);
-  Brain.Screen.print(Vacuum.temperature(celsius));
-  Brain.Screen.setCursor(6, 1);
-  Brain.Screen.print(Flywheel.temperature(celsius));
-  wait(20, seconds);
-  Brain.Screen.clearScreen();
-}
-
 void execute_intial_config(void){
   gameMode = 0;
   if (gameMode == 0){
@@ -646,48 +713,14 @@ void execute_intial_config(void){
 }
 //^^^This is some heavy abstraction however this makes it all work so don't forget it.
 // below is true competition main.
-//int main() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  //vexcodeInit();
-  //execute_intial_config();
-  //auton_mode();
-  //user_mode();
-//} //I have finally and unequivocally hit my breaking point and am now internally screeching.
-// above is true competition main.
- 
- //The following 3 mains are for debugging purposes only.
- 
-//int main() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  //vexcodeInit();
-  //gameMode set by controller should only be used in the case of debugging.
-  //gameMode = 0;
-  //execute_intial_config();
-  //auton_mode();
-  //user_mode();
-//}
-//int main() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  //vexcodeInit();
-  //gameMode set by controller should only be used in the case of debugging.
-  //gameMode = 1;
-  //execute_intial_config();
-  //auton_mode();
-  //user_mode();
-//}
- //int main() {
-   //Initializing Robot Configuration. DO NOT REMOVE!
- // vexcodeInit();
-  //gameMode set by controller should only be used in the case of debugging.
-  //gameMode = 2;
-  //execute_intial_config();
-  //auton_mode();
-  //user_mode();
-//}
-
-//below is drive only main
 int main() {
- gameMode = 3;
+   //Initializing Robot Configuration. DO NOT REMOVE!
+  vexcodeInit();
+  gameMode = 3;
  drive_only_UM();
-}
- 
+} //I have finally and unequivocally hit my breaking point and am now internally screeching.
+
+//  execute_intial_config();
+//  auton_mode();
+//  user_mode();
+//  drive_only_UM();

@@ -8,10 +8,10 @@ using code = vision::code;
 brain  Brain;
 
 // VEXcode device constructors
-motor Top_Left = motor(PORT1, ratio6_1, false);
-motor Top_Right = motor(PORT2, ratio6_1, false);
-motor Bottom_Left = motor(PORT3, ratio6_1, false);
-motor Bottom_Right = motor(PORT4, ratio6_1, false);
+motor Top_Left = motor(PORT1, ratio18_1, false);
+motor Top_Right = motor(PORT2, ratio18_1, false);
+motor Bottom_Left = motor(PORT3, ratio18_1, false);
+motor Bottom_Right = motor(PORT4, ratio18_1, false);
 controller Controller1 = controller(primary);
 /*vex-vision-config:begin*/
 signature Vision5__DISK = signature (1, 2127, 2473, 2300, -5239, -4555, -4897, 3, 0);
