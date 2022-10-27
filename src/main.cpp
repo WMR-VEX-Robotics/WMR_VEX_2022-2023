@@ -65,10 +65,10 @@ void autonomous(void) {
 void usercontrol(void) {
   Brain.Screen.clearLine();
   while (1) {
-    LeftFront.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position()), percent);
-    RightFront.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position()), percent);
-    LeftRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position()), percent);
-    RightRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position()), percent);
+    LeftFront.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) + (Controller1.Axis1.position())) * 0.5, percent);
+    RightFront.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - (Controller1.Axis1.position())) * 0.5, percent);
+    LeftRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) + (Controller1.Axis1.position())) * 0.5, percent);
+    RightRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - (Controller1.Axis1.position())) * 0.5, percent);
     if((abs(Controller1.Axis3.position()) - abs(Controller1.Axis1.position())) == 0) {
       StopAllChasis();
     }
