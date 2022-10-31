@@ -13,6 +13,7 @@
 #include <string.h>
 #include <string>
 #include <sstream>
+#include "odominc.h";
 
 #include "v5.h"
 #include "v5_vcs.h"

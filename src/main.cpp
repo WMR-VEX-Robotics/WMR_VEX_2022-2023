@@ -716,6 +716,7 @@ void execute_intial_config(void){
 int main() {
    //Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
+  maRelay::set_initial_Position();
   gameMode = 3;
  drive_only_UM();
 } //I have finally and unequivocally hit my breaking point and am now internally screeching.
