@@ -8,6 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include <cmath>
 
 using namespace vex;
 
@@ -19,10 +20,10 @@ brain Brain;
 
 // VEXcode device constructors
 controller Controller1 = controller(primary);
-motor LeftFront = motor(PORT1, ratio36_1, true);
-motor LeftRear = motor(PORT5, ratio36_1, false);
-motor RightFront = motor(PORT3, ratio36_1, false);
-motor RightRear = motor(PORT4, ratio36_1, true);
+motor LeftFront = motor(PORT1, ratio6_1, true);
+motor LeftRear = motor(PORT5, ratio6_1, false);
+motor RightFront = motor(PORT3, ratio6_1, false);
+motor RightRear = motor(PORT4, ratio6_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
@@ -52,7 +53,7 @@ void StopAllChasis() {
 }
 
 void pre_auton(void) {
-
+  
 }
 
 void autonomous(void) {
@@ -61,11 +62,10 @@ void autonomous(void) {
 
 void usercontrol(void) {
   while (1) {
-    Controller1.ButtonL1.pressed(RobotReverse);
-    LeftFront.spin(forward, (-Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    RightFront.spin(forward, (-Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
       StopAllChasis();
     }
