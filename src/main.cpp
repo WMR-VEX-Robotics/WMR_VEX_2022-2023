@@ -639,16 +639,16 @@ void temperature_grab(void){
 void xdrive_user_control(void){
   double velocityControl1 = (Controller1.Axis2.position() + 100);
   double velocityControl2 = (velocityControl1 / 200);
-  Top_Left.spin(reverse, (((-Controller1.Axis3.position()) - Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
-  Bottom_Left.spin(forward, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
-  Top_Right.spin(reverse, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2,volt);
-  Bottom_Right.spin(forward, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
+  Top_Left.spin(forward, (((-Controller1.Axis3.position()) - Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
+  Bottom_Left.spin(reverse, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
+  Top_Right.spin(forward, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2,volt);
+  Bottom_Right.spin(reverse, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
   if (Controller1.ButtonY.pressing()){
     fullBrake();
   } //impliment soft braking.
  if (Controller1.ButtonR2.pressing()){
-  Top_Left.spin(reverse, 50, volt);
-  Bottom_Left.spin(forward, 50, volt);
+  Top_Left.spin(forward, 50, volt);
+  Bottom_Left.spin(reverse, 50, volt);
   Bottom_Right.spin(reverse, 50, volt);
   Top_Right.spin(forward, 50, volt);
  }
@@ -684,6 +684,10 @@ void user_mode(void){
   }
 }
 
+void autonAdr(void){
+  
+}
+
  void drive_only_UM(void){
    if (gameMode == 3) {
      Controller1.Screen.print("User");
@@ -716,7 +720,6 @@ void execute_intial_config(void){
 int main() {
    //Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  maRelay::set_initial_Position();
   gameMode = 3;
  drive_only_UM();
 } //I have finally and unequivocally hit my breaking point and am now internally screeching.
