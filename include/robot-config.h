@@ -8,6 +8,7 @@ extern motor LeftFront;
 extern motor LeftRear;
 extern motor RightFront;
 extern motor RightRear;
+extern motor Spin;
 extern pneumatics P1;
 
 
