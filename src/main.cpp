@@ -34,16 +34,14 @@ int RobotReverseVariable = 1;
 void RobotReverse() {
   if (RobotReverseVariable == 1) {
     RobotReverseVariable = -1;
-    Brain.Screen.print("Enabled Reverse Controls");
-    wait(250, msec);
     Brain.Screen.clearLine();
+    Brain.Screen.print(RobotReverseVariable);
     return;
   };
   if (RobotReverseVariable == -1) {
     RobotReverseVariable = 1;
-    Brain.Screen.print("Disabled Reverse Controls");
-    wait(250, msec);
     Brain.Screen.clearLine();
+    Brain.Screen.print(RobotReverseVariable);
     return;
   };
 };
@@ -64,14 +62,12 @@ void autonomous(void) {
 }
 
 void usercontrol(void) {
-  Brain.Screen.clearLine();
   while (1) {
-    LeftFront.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) + (Controller1.Axis1.position())) * 0.5, percent);
-    RightFront.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - (Controller1.Axis1.position())) * 0.5, percent);
-    LeftRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) + (Controller1.Axis1.position())) * 0.5, percent);
-    RightRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - (Controller1.Axis1.position())) * 0.5, percent);
-    
-    if((abs(Controller1.Axis3.position()) - abs(Controller1.Axis1.position())) == 0) {
+    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
       StopAllChasis();
     }
     if (Controller1.ButtonL1.pressing()) {
