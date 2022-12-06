@@ -24,6 +24,7 @@ motor LeftFront = motor(PORT1, ratio6_1, true);
 motor LeftRear = motor(PORT5, ratio6_1, false);
 motor RightFront = motor(PORT3, ratio6_1, false);
 motor RightRear = motor(PORT4, ratio6_1, true);
+motor Spin = motor(PORT5, ratio6_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
@@ -69,6 +70,7 @@ void usercontrol(void) {
     RightFront.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - (Controller1.Axis1.position())) * 0.5, percent);
     LeftRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) + (Controller1.Axis1.position())) * 0.5, percent);
     RightRear.spin(forward, ((Controller1.Axis3.position() * RobotReverseVariable) - (Controller1.Axis1.position())) * 0.5, percent);
+    
     if((abs(Controller1.Axis3.position()) - abs(Controller1.Axis1.position())) == 0) {
       StopAllChasis();
     }
