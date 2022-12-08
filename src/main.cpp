@@ -30,27 +30,24 @@ pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
 int RobotReverseVariable = 1;
-
-void RobotReverse() {
-  if (RobotReverseVariable == 1) {
-    RobotReverseVariable = -1;
-    Brain.Screen.clearLine();
-    Brain.Screen.print(RobotReverseVariable);
-    return;
-  };
-  if (RobotReverseVariable == -1) {
-    RobotReverseVariable = 1;
-    Brain.Screen.clearLine();
-    Brain.Screen.print(RobotReverseVariable);
-    return;
-  };
-};
+bool manual = false;
+int amount = 0;
 
 void StopAllChasis() {
   LeftFront.stop(hold);
   LeftRear.stop(hold);
   RightFront.stop(hold);
   RightRear.stop(hold);
+}
+
+void SpinUp(int per){
+  Spin.spin(forward, per, percent);
+}
+void print(int per, bool man){
+  Controller1.Screen.clearScreen();
+  Controller1.Screen.print("%i%", per);
+  Controller1.Screen.newLine();
+  Controller1.Screen.print("%s", manual ? "true" : "false");
 }
 
 void pre_auton(void) {
@@ -70,8 +67,40 @@ void usercontrol(void) {
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
       StopAllChasis();
     }
+    if (Controller1.ButtonR1.pressing()){
+      if(manual){
+        manual = false;
+      }
+      manual = true;
+      wait(250, msec);
+    }
     if (Controller1.ButtonL1.pressing()) {
-      RobotReverse();
+      if (RobotReverseVariable == 1) {
+        RobotReverseVariable = -1;
+      }
+        RobotReverseVariable = 1;
+      wait(250, msec);
+      print(amount, manual);
+    }
+    if(Controller1.ButtonA.pressing()){
+      SpinUp(100);
+      amount = 100;
+      print(amount, manual);
+    }
+    if(Controller1.ButtonB.pressing()){
+      SpinUp(75);
+      amount = 75;
+      print(amount, manual);
+    }
+    if(Controller1.ButtonX.pressing()){
+      SpinUp(50);
+      amount = 50;
+      print(amount, manual);
+    }
+    if(Controller1.ButtonY.pressing()){
+      SpinUp(25);
+      amount = 25;
+      print(amount, manual);
     }
   }
   wait(20, msec);
