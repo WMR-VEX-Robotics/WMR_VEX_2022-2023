@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       23_clichtenberger                                         */
+/*    Author:       Carlo and Erik                                            */
 /*    Created:      Tue Sep 27 2022                                           */
 /*    Description:  V5 project                                                */
 /*                                                                            */
@@ -25,6 +25,7 @@ motor LeftRear = motor(PORT5, ratio6_1, false);
 motor RightFront = motor(PORT3, ratio6_1, false);
 motor RightRear = motor(PORT4, ratio6_1, true);
 motor Spin = motor(PORT5, ratio6_1, true);
+motor Launch = motor(PORT6, ratio18_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
