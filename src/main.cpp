@@ -26,6 +26,7 @@ motor RightFront = motor(PORT3, ratio6_1, false);
 motor RightRear = motor(PORT4, ratio6_1, true);
 motor Spin = motor(PORT5, ratio6_1, true);
 motor Launch = motor(PORT6, ratio18_1, true);
+motor Roll = motor(PORT7, ratio18_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
@@ -105,6 +106,9 @@ void usercontrol(void) {
     }
     if(Controller1.ButtonUp.pressing()) {
       Launch.spin(forward);
+    }
+    if(Controller1.ButtonDown.pressing()) {
+      Roll.spin(forward);
     }
   }
   P1.close();
