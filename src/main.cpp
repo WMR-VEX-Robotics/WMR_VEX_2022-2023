@@ -52,7 +52,7 @@ void print(int per, bool man){
 }
 
 void pre_auton(void) {
-  
+  P1.open();
 }
 
 void autonomous(void) {
@@ -103,7 +103,11 @@ void usercontrol(void) {
       amount = 25;
       print(amount, manual);
     }
+    if(Controller1.ButtonUp.pressing()) {
+      Launch.spin(forward);
+    }
   }
+  P1.close();
   wait(20, msec);
 }
 
