@@ -57,7 +57,9 @@ void pre_auton(void) {
 }
 
 void autonomous(void) {
-
+//spin roller
+//get some disc
+//lauch them into the goal
 }
 
 void usercontrol(void) {
