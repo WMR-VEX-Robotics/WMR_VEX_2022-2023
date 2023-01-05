@@ -85,6 +85,7 @@ void drawGUI() {
 }
 
 void selectAuton() {
+  Brain.Screen.printAt(400, 200, "Auton:");
   bool selectingAuton = true;
 
   int x = Brain.Screen.xPosition(); // get the x position of last touch of the screen
@@ -145,7 +146,7 @@ void pre_auton(void) {
 void autonomous(void) {
   switch (AutonSelected) {
   case 0:
-  //code 0
+  StopAllChasis();
   break;
     case 1:
   //code 1
