@@ -220,6 +220,11 @@ void usercontrol(void) {
     }
     if(Controller1.ButtonUp.pressing()) {
       Launch.spin(forward);
+      wait(.1, sec);
+      Launch.spin(reverse);
+      wait(.1, sec);
+      Launch.stop();
+
     }
   }
   P1.close();
