@@ -178,8 +178,8 @@ void autonomous(void) {
 void usercontrol(void) {
   Controller1.Screen.clearScreen();
   int length;
-  int lengthSum;
-  int lengthAvg;
+  int lengthSum = 0;
+  int lengthAvg = 0;
   while (1) {
     //************* MOTOR STATS UI *****************
     string color;
@@ -193,18 +193,22 @@ void usercontrol(void) {
       color = green;
     }
     
+    length = Launch.efficienct(percent));
     for (i = 0; i < 5; i++) {
       lengthSum = lengthSum + length;
       if (i == 5) {
         lengthAvg = lengthSum / 5;
         lengthSum = 0;
         Brain.Screen.clearScreen();
+        Brain.Screen.setFillColor(transparent);
+        Brain.Screen.drawRectangle(20, 300, 50, 300);
+        Brain.Screen.printAt(25, 75, "0");
         Brain.Screen.setFillColor(tempColor);
-        Brain.Screen.drawRectangle(20, lengthAvg, 50, lengthAvg);
+        Brain.Screen.drawRectangle(20, lengthAvg * 3, 50, lengthAvg * 3);
         Brain.Screen.printAt(25, 75, "0");
     }
     
-    
+   
     
     //*************** CONTROLLER STATS UI*****************
     //Controller1.Screen.clearLine();
