@@ -177,7 +177,36 @@ void autonomous(void) {
 
 void usercontrol(void) {
   Controller1.Screen.clearScreen();
+  int length;
+  int lengthSum;
+  int lengthAvg;
   while (1) {
+    //************* MOTOR STATS UI *****************
+    string color;
+    if (Launch.temperature(percent)) > 75) {
+      color = red;
+    else if (Launch.temperature(percent)) > 50 && Launch.temperature(percent)) <= 75) {
+      color = orange;
+    else if (Launch.temperature(percent)) > 25 && Launch.temperature(percent)) <= 50) {
+      color = yellow;
+    else {
+      color = green;
+    }
+    
+    for (i = 0; i < 5; i++) {
+      lengthSum = lengthSum + length;
+      if (i == 5) {
+        lengthAvg = lengthSum / 5;
+        lengthSum = 0;
+        Brain.Screen.clearScreen();
+        Brain.Screen.setFillColor(tempColor);
+        Brain.Screen.drawRectangle(20, lengthAvg, 50, lengthAvg);
+        Brain.Screen.printAt(25, 75, "0");
+    }
+    
+    
+    
+    //*************** CONTROLLER STATS UI*****************
     //Controller1.Screen.clearLine();
     Controller1.Screen.setCursor(1, 1);
     Controller1.Screen.clearLine();
