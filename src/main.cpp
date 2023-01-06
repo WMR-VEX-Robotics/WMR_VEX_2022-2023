@@ -176,11 +176,35 @@ void autonomous(void) {
 }
 
 void usercontrol(void) {
+  Controller1.Screen.clearScreen();
   while (1) {
-    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    //Controller1.Screen.clearLine();
+    Controller1.Screen.setCursor(1, 1);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Efficiency: ");
+    Controller1.Screen.print(Launch.efficiency(percent));
+    Controller1.Screen.setCursor(2, 2);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Temps: ");
+    Controller1.Screen.print(Launch.temperature(percent));
+    Controller1.Screen.setCursor(3, 3);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Torque: ");
+    Controller1.Screen.print(Launch.torque(Nm));
+    Controller1.Screen.setCursor(4, 4);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Wattage: ");
+    Controller1.Screen.print(Launch.power());
+    //LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    //RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    //LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    //RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    Launch.spin(forward, Controller1.Axis3.position(), percent);
+
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
       StopAllChasis();
     }
@@ -225,6 +249,10 @@ void usercontrol(void) {
       Launch.spin(reverse);
       wait(.1, sec);
       Launch.stop();
+
+    //************* CODE FOR UI ***********
+
+    
 
     }
   }
