@@ -10,6 +10,7 @@ extern motor RightFront;
 extern motor RightRear;
 extern motor Spin;
 extern motor Launch;
+extern motor Roll;
 extern pneumatics P1;
 
 

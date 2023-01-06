@@ -25,6 +25,7 @@ motor LeftRear = motor(PORT5, ratio6_1, false);
 motor RightFront = motor(PORT3, ratio6_1, false);
 motor RightRear = motor(PORT4, ratio6_1, true);
 motor Spin = motor(PORT5, ratio6_1, true);
+motor Roll = motor(PORT6, ratio18_1, true);
 motor Launch = motor(PORT6, ratio18_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
@@ -147,7 +148,7 @@ void autonomous(void) {
   StopAllChasis();
   break;
     case 1:
-  //code 1
+  Roll.spinFor(.5, sec);
   break;
     case 2:
   //code 2
