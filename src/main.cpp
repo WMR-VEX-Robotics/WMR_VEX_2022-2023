@@ -45,6 +45,43 @@ void StopAllChasis() {
   RightRear.stop(hold);
 }
 
+//************** Autonomous Drive Functions *****************
+// Example: driveForward(14, 75);
+// Inches is in inches, velocity is in percent
+// 12.57 is the conversion from rotations to inches, making the function easier to use in the scale of the arena
+
+void driveForward(double inches, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(inches / 12.57, rev, velocity, pct, true);
+  RightFront.spinFor(inches / 12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(inches / 12.57, rev, velocity, pct, true);
+  RightRear.spinFor(inches / 12.57, rev, velocity, pct, true);    
+}
+
+void driveBackward(double inches, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(inches / -12.57, rev, velocity, pct, true);
+  RightFront.spinFor(inches / -12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(inches / -12.57, rev, velocity, pct, true);
+  RightRear.spinFor(inches / -12.57, rev, velocity, pct, true);    
+}
+
+void turnRight(double degrees, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
+  RightFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(degrees / 12.57, rev, velocity, pct, true);            // 12.57 isnt the right number, needs to be changed
+  RightRear.spinFor(degrees / -12.57, rev, velocity, pct, true); 
+}
+
+// void turnLeft
+  
+// void bankRight(double forward, double right, double velocity)
+
+// voic bankLeft
+  
+  
+  
+  
+  
+  
 void SpinUp(int per){
   Spin.spin(forward, per, percent);
 }
