@@ -44,14 +44,14 @@ void StopAllChasis() {
   RightFront.stop(hold);
   RightRear.stop(hold);
 }
-
+/*
 void stringRelease(bool release) {
   if (release == true) {
     vex::pneumatics::open;
   } else {
     vex::pneumatics::closed;
   }
-
+*/
 //************** Autonomous Drive Functions *****************
 // Example: driveForward(14, 75);
 // Inches is in inches, velocity is in percent
@@ -97,7 +97,7 @@ void launchSpeed(int percent) {
 }
 
 void robotReverse(void) {
-  if (RobotReverseVarialbe == 1) {
+  if (RobotReverseVariable= 1) {
     RobotReverseVariable = -1;
   } else {
     RobotReverseVariable = 1;
@@ -107,7 +107,7 @@ void robotReverse(void) {
 void SpinUp(int per){
   Spin.spin(forward, per, percent);
 }
-void print(int per, bool man){
+void print(int per, bool man) {
   Controller1.Screen.clearScreen();
   Controller1.Screen.print("%i%", per);
   Controller1.Screen.newLine();
@@ -233,15 +233,17 @@ void autonomous(void) {
 //get some disc
 //lauch them into the goal
 }
-/*
+
 void usercontrol(void) {
+  /*
   Controller1.Screen.clearScreen();
   int length;
   int lengthSum = 0;
   int lengthAvg = 0;
+  */
   while (1) {
     //************* MOTOR STATS UI *****************
-    
+    /*  
     string color;
     if (Launch.temperature(percent)) > 75) {
       color = red;
