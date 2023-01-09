@@ -45,6 +45,13 @@ void StopAllChasis() {
   RightRear.stop(hold);
 }
 
+void stringRelease(bool release) {
+  if (release == true) {
+    vex::pneumatics::open;
+  } else {
+    vex::pneumatics::closed;
+  }
+
 //************** Autonomous Drive Functions *****************
 // Example: driveForward(14, 75);
 // Inches is in inches, velocity is in percent
@@ -343,6 +350,8 @@ void usercontrol(void) {
     Controller1.ButtonX.pressed(launchSpeed(50));
     Controller1.ButtonY.pressed(launchSpeed(0));
     Controller1.ButtonL1.pressed(robotReverse());
+    Controller1.ButtonR1.pressed(stringRelease(true));
+    Controller1.ButtonR2.pressed(stringRelease(false));
       
      
     
