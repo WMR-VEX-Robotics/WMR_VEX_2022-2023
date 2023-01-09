@@ -88,7 +88,13 @@ void launchSpeed(int percent) {
   Launch.setStopping(coast);
   Launch.spin(forward, percent, pct);
 }
-  
+
+void robotReverse(void) {
+  if (RobotReverseVarialbe == 1) {
+    RobotReverseVariable = -1;
+  } else {
+    RobotReverseVariable = 1;
+  }
   
   
 void SpinUp(int per){
@@ -220,7 +226,7 @@ void autonomous(void) {
 //get some disc
 //lauch them into the goal
 }
-
+/*
 void usercontrol(void) {
   Controller1.Screen.clearScreen();
   int length;
@@ -228,6 +234,7 @@ void usercontrol(void) {
   int lengthAvg = 0;
   while (1) {
     //************* MOTOR STATS UI *****************
+    
     string color;
     if (Launch.temperature(percent)) > 75) {
       color = red;
@@ -253,11 +260,11 @@ void usercontrol(void) {
         Brain.Screen.drawRectangle(20, lengthAvg * 3, 50, lengthAvg * 3);
         Brain.Screen.printAt(25, 75, "0");
     }
-    
+    */
    
     
     //*************** CONTROLLER STATS UI*****************
-    //Controller1.Screen.clearLine();
+    /*Controller1.Screen.clearLine();
     Controller1.Screen.setCursor(1, 1);
     Controller1.Screen.clearLine();
     Controller1.Screen.newLine();
@@ -278,11 +285,15 @@ void usercontrol(void) {
     Controller1.Screen.newLine();
     Controller1.Screen.print("Wattage: ");
     Controller1.Screen.print(Launch.power());
-    //LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    //RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    //LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    //RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    Launch.spin(forward, Controller1.Axis3.position(), percent);
+    */
+ 
+      
+      
+    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
+    //Launch.spin(forward, Controller1.Axis3.position(), percent);
 
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
       StopAllChasis();
@@ -294,6 +305,8 @@ void usercontrol(void) {
       manual = true;
       wait(250, msec);
     }
+      
+    /*  
     if (Controller1.ButtonL1.pressing()) {
       if (RobotReverseVariable == 1) {
         RobotReverseVariable = -1;
@@ -303,7 +316,6 @@ void usercontrol(void) {
       print(amount, manual);
     }
     
-    /*
     if(Controller1.ButtonA.pressing()){
       SpinUp(100);
       amount = 100;
@@ -323,24 +335,25 @@ void usercontrol(void) {
       SpinUp(25);
       amount = 25;
       print(amount, manual);
-    
+    }
     */
       
     Controller1.ButtonA.pressed(launchSpeed(100));
     Controller1.ButtonB.pressed(launchSpeed(75));
     Controller1.ButtonX.pressed(launchSpeed(50));
     Controller1.ButtonY.pressed(launchSpeed(0));
-    
+    Controller1.ButtonL1.pressed(robotReverse());
       
      
-    }
+    
     if(Controller1.ButtonUp.pressing()) {
       Launch.spin(forward);
       wait(.1, sec);
       Launch.spin(reverse);
       wait(.1, sec);
       Launch.stop();
-
+    }
+  
     //************* CODE FOR UI ***********
 
     
