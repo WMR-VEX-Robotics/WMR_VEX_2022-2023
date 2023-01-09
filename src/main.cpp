@@ -78,7 +78,16 @@ void turnRight(double degrees, double velocity) {             //spinFor (double 
 // voic bankLeft
   
   
-  
+
+
+
+
+// *************** Launcher Control ******************
+
+void launchSpeed(int percent) {
+  Launch.setStopping(coast);
+  Launch.spin(forward, percent, pct);
+}
   
   
   
@@ -293,6 +302,8 @@ void usercontrol(void) {
       wait(250, msec);
       print(amount, manual);
     }
+    
+    /*
     if(Controller1.ButtonA.pressing()){
       SpinUp(100);
       amount = 100;
@@ -312,6 +323,16 @@ void usercontrol(void) {
       SpinUp(25);
       amount = 25;
       print(amount, manual);
+    
+    */
+      
+    Controller1.ButtonA.pressed(launchSpeed(100));
+    Controller1.ButtonB.pressed(launchSpeed(75));
+    Controller1.ButtonX.pressed(launchSpeed(50));
+    Controller1.ButtonY.pressed(launchSpeed(0));
+    
+      
+     
     }
     if(Controller1.ButtonUp.pressing()) {
       Launch.spin(forward);
