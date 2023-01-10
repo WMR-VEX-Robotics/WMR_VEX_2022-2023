@@ -44,14 +44,14 @@ void StopAllChasis() {
   RightFront.stop(hold);
   RightRear.stop(hold);
 }
-/*
-void stringRelease(bool release) {
-  if (release == true) {
-    vex::pneumatics::open;
+
+void manualControl(void) {
+  if(manual) {
+    manual = false;
   } else {
-    vex::pneumatics::closed;
+    manual = true;
   }
-*/
+
 //************** Autonomous Drive Functions *****************
 // Example: driveForward(14, 75);
 // Inches is in inches, velocity is in percent
@@ -78,15 +78,17 @@ void turnRight(double degrees, double velocity) {             //spinFor (double 
   RightRear.spinFor(degrees / -12.57, rev, velocity, pct, true); 
 }
 
-// void turnLeft
-  
+void turnLeft(double degrees, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
+  RightFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(degrees / -12.57, rev, velocity, pct, true);            // 12.57 isnt the right number, needs to be changed
+  RightRear.spinFor(degrees / 12.57, rev, velocity, pct, true); 
+}  
+
 // void bankRight(double forward, double right, double velocity)
 
 // voic bankLeft
   
-  
-
-
 
 
 // *************** Launcher Control ******************
@@ -103,10 +105,14 @@ void robotReverse(void) {
     RobotReverseVariable = 1;
   }
   
-  
 void SpinUp(int per){
   Spin.spin(forward, per, percent);
 }
+
+  
+  
+  
+  
 void print(int per, bool man) {
   Controller1.Screen.clearScreen();
   Controller1.Screen.print("%i%", per);
@@ -228,95 +234,38 @@ void autonomous(void) {
   //code 7
   break;
   }
-
-//spin roller
-//get some disc
-//lauch them into the goal
 }
 
+  
+  
+  
+  
 void usercontrol(void) {
-  /*
-  Controller1.Screen.clearScreen();
-  int length;
-  int lengthSum = 0;
-  int lengthAvg = 0;
-  */
-  while (1) {
-    //************* MOTOR STATS UI *****************
-    /*  
-    string color;
-    if (Launch.temperature(percent)) > 75) {
-      color = red;
-    else if (Launch.temperature(percent)) > 50 && Launch.temperature(percent)) <= 75) {
-      color = orange;
-    else if (Launch.temperature(percent)) > 25 && Launch.temperature(percent)) <= 50) {
-      color = yellow;
-    else {
-      color = green;
-    }
-    
-    length = Launch.efficienct(percent));
-    for (i = 0; i < 5; i++) {
-      lengthSum = lengthSum + length;
-      if (i == 5) {
-        lengthAvg = lengthSum / 5;
-        lengthSum = 0;
-        Brain.Screen.clearScreen();
-        Brain.Screen.setFillColor(transparent);
-        Brain.Screen.drawRectangle(20, 300, 50, 300);
-        Brain.Screen.printAt(25, 75, "0");
-        Brain.Screen.setFillColor(tempColor);
-        Brain.Screen.drawRectangle(20, lengthAvg * 3, 50, lengthAvg * 3);
-        Brain.Screen.printAt(25, 75, "0");
-    }
-    */
-   
-    
-    //*************** CONTROLLER STATS UI*****************
-    /*Controller1.Screen.clearLine();
-    Controller1.Screen.setCursor(1, 1);
-    Controller1.Screen.clearLine();
-    Controller1.Screen.newLine();
-    Controller1.Screen.print("Efficiency: ");
-    Controller1.Screen.print(Launch.efficiency(percent));
-    Controller1.Screen.setCursor(2, 2);
-    Controller1.Screen.clearLine();
-    Controller1.Screen.newLine();
-    Controller1.Screen.print("Temps: ");
-    Controller1.Screen.print(Launch.temperature(percent));
-    Controller1.Screen.setCursor(3, 3);
-    Controller1.Screen.clearLine();
-    Controller1.Screen.newLine();
-    Controller1.Screen.print("Torque: ");
-    Controller1.Screen.print(Launch.torque(Nm));
-    Controller1.Screen.setCursor(4, 4);
-    Controller1.Screen.clearLine();
-    Controller1.Screen.newLine();
-    Controller1.Screen.print("Wattage: ");
-    Controller1.Screen.print(Launch.power());
-    */
- 
-      
-      
+  while (1) {      
     LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
     RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
     LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
     RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    //Launch.spin(forward, Controller1.Axis3.position(), percent);
 
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {
       StopAllChasis();
-    }
-    if (Controller1.ButtonR1.pressing()){
-      if(manual){
-        manual = false;
-      }
-      manual = true;
-      wait(250, msec);
-    }
+    }  
       
-    /*  
-    if (Controller1.ButtonL1.pressing()) {
+    Controller1.ButtonA.pressed(launchSpeed(100));
+    Controller1.ButtonB.pressed(launchSpeed(75));
+    Controller1.ButtonX.pressed(launchSpeed(50));
+    Controller1.ButtonY.pressed(launchSpeed(0));
+    Controller1.ButtonL1.pressed(robotReverse());
+    Controller1.ButtonR1.pressed(stringRelease(true));
+    Controller1.ButtonR2.pressed(stringRelease(false));
+    Controller1.ButtonL2.pressed(manualControl());
+    
+    
+    
+    
+    
+// **************************** No Man's Land (Erik's Code) ********************************* /*
+      if (Controller1.ButtonL1.pressing()) {
       if (RobotReverseVariable == 1) {
         RobotReverseVariable = -1;
       }
@@ -345,30 +294,67 @@ void usercontrol(void) {
       amount = 25;
       print(amount, manual);
     }
-    */
-      
-    Controller1.ButtonA.pressed(launchSpeed(100));
-    Controller1.ButtonB.pressed(launchSpeed(75));
-    Controller1.ButtonX.pressed(launchSpeed(50));
-    Controller1.ButtonY.pressed(launchSpeed(0));
-    Controller1.ButtonL1.pressed(robotReverse());
-    Controller1.ButtonR1.pressed(stringRelease(true));
-    Controller1.ButtonR2.pressed(stringRelease(false));
-      
-     
     
-    if(Controller1.ButtonUp.pressing()) {
-      Launch.spin(forward);
-      wait(.1, sec);
-      Launch.spin(reverse);
-      wait(.1, sec);
-      Launch.stop();
+    Controller1.Screen.clearLine();
+    Controller1.Screen.setCursor(1, 1);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Efficiency: ");
+    Controller1.Screen.print(Launch.efficiency(percent));
+    Controller1.Screen.setCursor(2, 2);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Temps: ");
+    Controller1.Screen.print(Launch.temperature(percent));
+    Controller1.Screen.setCursor(3, 3);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Torque: ");
+    Controller1.Screen.print(Launch.torque(Nm));
+    Controller1.Screen.setCursor(4, 4);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Wattage: ");
+    Controller1.Screen.print(Launch.power());
+   
+    string color;
+    if (Launch.temperature(percent)) > 75) {
+      color = red;
+    else if (Launch.temperature(percent)) > 50 && Launch.temperature(percent)) <= 75) {
+      color = orange;
+    else if (Launch.temperature(percent)) > 25 && Launch.temperature(percent)) <= 50) {
+      color = yellow;
+    else {
+      color = green;
     }
-  
-    //************* CODE FOR UI ***********
-
     
-
+    Controller1.Screen.clearScreen();
+    int length;
+    int lengthSum = 0;
+    int lengthAvg = 0;
+      
+    length = Launch.efficienct(percent));
+    for (i = 0; i < 5; i++) {
+      lengthSum = lengthSum + length;
+      if (i == 5) {
+        lengthAvg = lengthSum / 5;
+        lengthSum = 0;
+        Brain.Screen.clearScreen();
+        Brain.Screen.setFillColor(transparent);
+        Brain.Screen.drawRectangle(20, 300, 50, 300);
+        Brain.Screen.printAt(25, 75, "0");
+        Brain.Screen.setFillColor(tempColor);
+        Brain.Screen.drawRectangle(20, lengthAvg * 3, 50, lengthAvg * 3);
+        Brain.Screen.printAt(25, 75, "0");
+    }
+    
+     void stringRelease(bool release) {
+     if (release == true) {
+      vex::pneumatics::open;
+     }  else {
+      vex::pneumatics::closed;
+     }
+  */
     }
   }
   P1.close();
