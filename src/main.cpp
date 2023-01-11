@@ -29,6 +29,8 @@ motor Roll = motor(PORT6, ratio18_1, true);
 motor Launch = motor(PORT6, ratio18_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
+
+
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
 int RobotReverseVariable = 1;
@@ -37,6 +39,10 @@ int amount = 0;
 int AutonSelected = 0;
 int AutonMin = 0;
 int AutonMax = 6;
+
+
+
+// *************** DRIVE FUNCTIONS *****************
 
 void StopAllChasis() {
   LeftFront.stop(hold);
@@ -52,67 +58,34 @@ void manualControl(void) {
     manual = true;
   }
 
-//************** Autonomous Drive Functions *****************
-// Example: driveForward(14, 75);
-// Inches is in inches, velocity is in percent
-// 12.57 is the conversion from rotations to inches, making the function easier to use in the scale of the arena
-
-void driveForward(double inches, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
-  LeftFront.spinFor(inches / 12.57, rev, velocity, pct, true);
-  RightFront.spinFor(inches / 12.57, rev, velocity, pct, true);
-  LeftRear.spinFor(inches / 12.57, rev, velocity, pct, true);
-  RightRear.spinFor(inches / 12.57, rev, velocity, pct, true);    
-}
-
-void driveBackward(double inches, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
-  LeftFront.spinFor(inches / -12.57, rev, velocity, pct, true);
-  RightFront.spinFor(inches / -12.57, rev, velocity, pct, true);
-  LeftRear.spinFor(inches / -12.57, rev, velocity, pct, true);
-  RightRear.spinFor(inches / -12.57, rev, velocity, pct, true);    
-}
-
-void turnRight(double degrees, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
-  LeftFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
-  RightFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
-  LeftRear.spinFor(degrees / 12.57, rev, velocity, pct, true);            // 12.57 isnt the right number, needs to be changed
-  RightRear.spinFor(degrees / -12.57, rev, velocity, pct, true); 
-}
-
-void turnLeft(double degrees, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
-  LeftFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
-  RightFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
-  LeftRear.spinFor(degrees / -12.57, rev, velocity, pct, true);            // 12.57 isnt the right number, needs to be changed
-  RightRear.spinFor(degrees / 12.57, rev, velocity, pct, true); 
-}  
-
-// void bankRight(double forward, double right, double velocity)
-
-// voic bankLeft
-  
-
-
-// *************** Launcher Control ******************
+  void robotReverse(void) {
+  if (RobotReverseVariable= 1) {
+    RobotReverseVariable = -1;
+  } else {
+    RobotReverseVariable = 1;
+  }
+    
+    
+    
+// *************** LAUNCHER CONTROL ******************
 
 void launchSpeed(int percent) {
   Launch.setStopping(coast);
   Launch.spin(forward, percent, pct);
 }
 
-void robotReverse(void) {
-  if (RobotReverseVariable= 1) {
-    RobotReverseVariable = -1;
-  } else {
-    RobotReverseVariable = 1;
-  }
-  
 void SpinUp(int per){
   Spin.spin(forward, per, percent);
-}
+}  
+  
+    
+  
 
-  
-  
-  
-  
+
+    
+    
+// *************** BRAIN PRINT ****************
+    
 void print(int per, bool man) {
   Controller1.Screen.clearScreen();
   Controller1.Screen.print("%i%", per);
@@ -200,13 +173,55 @@ void selectAuton() {
   wait(10, msec); // slow it down
   Brain.Screen.setFillColor(black);
 }
+
+    //************** AUTONOMOUS DRIVE FUNCTIONS *****************
+// Example: driveForward(14, 75);
+// Inches is in inches, velocity is in percent
+// 12.57 is the conversion from rotations to inches, making the function easier to use in the scale of the arena
+
+void driveForward(double inches, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(inches / 12.57, rev, velocity, pct, true);
+  RightFront.spinFor(inches / 12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(inches / 12.57, rev, velocity, pct, true);
+  RightRear.spinFor(inches / 12.57, rev, velocity, pct, true);    
+}
+
+void driveBackward(double inches, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(inches / -12.57, rev, velocity, pct, true);
+  RightFront.spinFor(inches / -12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(inches / -12.57, rev, velocity, pct, true);
+  RightRear.spinFor(inches / -12.57, rev, velocity, pct, true);    
+}
+
+void turnRight(double degrees, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
+  RightFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(degrees / 12.57, rev, velocity, pct, true);            // 12.57 isnt the right number, needs to be changed
+  RightRear.spinFor(degrees / -12.57, rev, velocity, pct, true); 
+}
+
+void turnLeft(double degrees, double velocity) {             //spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
+  LeftFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
+  RightFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
+  LeftRear.spinFor(degrees / -12.57, rev, velocity, pct, true);            // 12.57 isnt the right number, needs to be changed
+  RightRear.spinFor(degrees / 12.57, rev, velocity, pct, true); 
+}  
+
+// void bankRight(double forward, double right, double velocity)
+
+// voic bankLeft
+    
+   
+    
+// ****************** AUTONOMOUS ****************
+    
 void pre_auton(void) {
   P1.open();
   Brain.Screen.printAt(1, 40, "pre auton is running");
   drawGUI();
   Brain.Screen.pressed(selectAuton);
-}
-
+}   
+    
 void autonomous(void) {
   switch (AutonSelected) {
   case 0:
@@ -238,8 +253,8 @@ void autonomous(void) {
 
   
   
-  
-  
+// ****************** USER CONTROL ******************
+    
 void usercontrol(void) {
   while (1) {      
     LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
@@ -259,8 +274,6 @@ void usercontrol(void) {
     Controller1.ButtonR1.pressed(stringRelease(true));
     Controller1.ButtonR2.pressed(stringRelease(false));
     Controller1.ButtonL2.pressed(manualControl());
-    
-    
     
     
     
@@ -355,6 +368,9 @@ void usercontrol(void) {
       vex::pneumatics::closed;
      }
   */
+    
+    
+    
     }
   }
   P1.close();
