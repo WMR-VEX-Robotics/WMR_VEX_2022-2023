@@ -70,20 +70,21 @@ void robotReverse(void) {
 
 // **************** VACUUM ********************
 
-void useVacuum(int per){
-  Vacuum.spin(forward, per, percent);
+void useVacuum(int percent){
+  Vacuum.spin(forward, percent, pct);
 }
 
 // *************** LAUNCHER *******************
 
 void useLauncher(int percent) {
-  Launcher.setStopping(coast);
-  Launcher.spin(forward, 100, pct);
-  wait(500);
-  Launcher.setStopping(coast);
-  Launcher.spin(reverse, 100, pct);
-  wait(500);
-  Launcher.Stop();
+  Launcher.setStopping(brake);
+  Launcher.spin(reverse, percent, pct);
+  wait(125, msec);
+  Launcher.setStopping(brake);
+  Launcher.spin(forward, percent, pct);
+  wait(250, msec);
+  Launcher.stop();
+  wait(1000, msec);
 }
 
 // *************** FLYWHEEL *******************
@@ -227,6 +228,33 @@ void autonomous(void) {
   switch (auton) {
     case 0:
       StopAllChasis();
+      LeftFront.spin(forward, 100, percent);
+      RightFront.spin(forward, 100, percent);
+      LeftRear.spin(forward, 100, percent);
+      RightRear.spin(forward, 100, percent);
+      useVacuum(100);
+      wait(2000, msec);
+      useVacuum(0);
+      LeftFront.spin(forward, 100, percent);
+      RightFront.spin(forward, 100, percent);
+      LeftRear.spin(forward, 100, percent);
+      RightRear.spin(forward, 100, percent);
+      wait(5000, msec);
+      LeftFront.stop();
+      RightFront.stop();
+      LeftRear.stop();
+      RightRear.stop();
+      LeftFront.spin(reverse, 50, percent);
+      RightFront.spin(forward, 50, percent);
+      LeftRear.spin(reverse, 50, percent);
+      RightRear.spin(forward, 50, percent);
+      wait(90, msec);
+      useFlywheel(100);
+      wait(1500, msec);
+      for(int i=0; i<3; i++) {
+        useLauncher(100);
+        wait(150, msec);
+      }
       break;
     case 1:
       break;
@@ -254,8 +282,6 @@ void usercontrol(void) {
     RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
     LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
     RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    // Controller1.ButtonX.pressed(usePneumatics(true));
-    // Controller1.ButtonY.pressed(usePneumatics(false));
     if (Controller1.ButtonL1.pressing()) {
       if (RobotReverseVariable == 1) {
         RobotReverseVariable = -1;
@@ -281,12 +307,12 @@ void usercontrol(void) {
       // print(amount, manual);
     }
     if (Controller1.ButtonR2.pressing()) {
-      UseLauncher(100);
+      useLauncher(100);
       wait(250, msec);
       // print(amount, manual);
     }
     if (!Controller1.ButtonR2.pressing()) {
-      UseLauncher(0);
+      useLauncher(0);
       wait(250, msec);
       // print(amount, manual);
     }
