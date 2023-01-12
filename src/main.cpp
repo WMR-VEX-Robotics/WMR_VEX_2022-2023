@@ -78,9 +78,12 @@ void useVacuum(int per){
 
 void useLauncher(int percent) {
   Launcher.setStopping(coast);
-  Launcher.spin(forward, percent, pct);
+  Launcher.spin(forward, 100, pct);
+  wait(500);
   Launcher.setStopping(coast);
-  Launcher.spin(reverse, percent, pct);
+  Launcher.spin(reverse, 100, pct);
+  wait(500);
+  Launcher.Stop();
 }
 
 // *************** FLYWHEEL *******************
@@ -278,12 +281,12 @@ void usercontrol(void) {
       // print(amount, manual);
     }
     if (Controller1.ButtonR2.pressing()) {
-      
+      UseLauncher(100);
       wait(250, msec);
       // print(amount, manual);
     }
     if (!Controller1.ButtonR2.pressing()) {
-      
+      UseLauncher(0);
       wait(250, msec);
       // print(amount, manual);
     }
