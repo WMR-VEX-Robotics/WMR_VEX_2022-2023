@@ -15,7 +15,7 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
-/// A global instance of brain used for printing to the V5 Brain screen
+// A global instance of brain used for printing to the V5 Brain screen
 brain Brain;
 
 // VEXcode device constructors
@@ -35,7 +35,6 @@ bool RemoteControlCodeEnabled = true;
 bool manual = false;
 bool release = false;
 int RobotReverseVariable = 1;
-int amount = 0;
 int auton = 0;
 int AutonMin = 0;
 int AutonMax = 6;
@@ -84,7 +83,6 @@ void useLauncher(int percent) {
   Launcher.spin(forward, percent, pct);
   wait(250, msec);
   Launcher.stop();
-  wait(1000, msec);
 }
 
 // *************** FLYWHEEL *******************
@@ -289,42 +287,22 @@ void usercontrol(void) {
         RobotReverseVariable = 1;
       }
       wait(250, msec);
-      // print(amount, manual);
     }
     if (Controller1.ButtonR1.pressing()) {
       manualControl();
       wait(250, msec);
-      // print(amount, manual);
     }
     if(Controller1.ButtonL2.pressing()) {
       useFlywheel(100);
-      amount = 100;
-      // print(amount, manual);
-    }
-    if(!Controller1.ButtonL2.pressing()) {
-      useFlywheel(0);
-      amount = 0;
-      // print(amount, manual);
     }
     if (Controller1.ButtonR2.pressing()) {
       useLauncher(100);
-      wait(250, msec);
-      // print(amount, manual);
-    }
-    if (!Controller1.ButtonR2.pressing()) {
-      useLauncher(0);
-      wait(250, msec);
-      // print(amount, manual);
     }
     if(Controller1.ButtonA.pressing()){
       useVacuum(100);
-      amount = 100;
-      // print(amount, manual);
     }
     if(Controller1.ButtonB.pressing()){
       useVacuum(0);
-      amount = 0;
-      // print(amount, manual);
     }
     // Controller1.Screen.clearLine();
     // Controller1.Screen.setCursor(1, 1);
