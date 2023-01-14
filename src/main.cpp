@@ -61,8 +61,12 @@ void robotReverse(void) {
 
 // **************** VACUUM ********************
 
-void useVacuum(int percent){
-  Vacuum.spin(forward, percent, pct);
+void useForwardVacuum(int n){
+  Vacuum.spin(forward, n, pct);
+}
+
+void useReverseVacuum(int m){
+  Vacuum.spin(reverse, m, pct);
 }
 
 // *************** LAUNCHER *******************
@@ -84,6 +88,13 @@ void useFlywheel(int percent) {
   Flywheel1.spin(reverse, percent, pct);
   Flywheel2.setStopping(coast);
   Flywheel2.spin(forward, percent, pct);
+}
+
+void RevFlywheel(int percent) {
+  Flywheel1.setStopping(coast);
+  Flywheel1.spin(forward, percent, pct);
+  Flywheel2.setStopping(coast);
+  Flywheel2.spin(reverse, percent, pct);
 }
 
 // *************** PNEUMATICS *****************
@@ -222,9 +233,9 @@ void autonomous(void) {
       RightFront.spin(forward, 100, percent);
       LeftRear.spin(forward, 100, percent);
       RightRear.spin(forward, 100, percent);
-      useVacuum(100);
+      useForwardVacuum(100);
       wait(2000, msec);
-      useVacuum(0);
+      useForwardVacuum(0);
       LeftFront.spin(forward, 100, percent);
       RightFront.spin(forward, 100, percent);
       LeftRear.spin(forward, 100, percent);
@@ -268,25 +279,33 @@ void autonomous(void) {
 void drivercontrol(void) {
   while (1) {
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
-    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    LeftFront.spin(reverse, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightFront.spin(reverse, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
     if(Controller1.ButtonL2.pressing()) {
+      RevFlywheel(RobotLaunchVariable);
+    } 
+    else if(Controller1.ButtonR1.pressing()) {
       useFlywheel(RobotLaunchVariable);
-    } else {
+    }
+    else {
       useFlywheel(0);
     }
+    
     if (Controller1.ButtonR2.pressing()) {
       useLauncher(100);
     } else {
       // useLauncher(0);
     }
     if(Controller1.ButtonA.pressing()){
-      useVacuum(100);
+      useForwardVacuum(100);
     }
     if(Controller1.ButtonB.pressing()){
-      useVacuum(0);
+      useForwardVacuum(0);
+    }
+    if(Controller1.ButtonX.pressing()){
+      useReverseVacuum(100);
     }
     if(Controller1.ButtonUp.pressing()){
       RobotReverseVariable = 1;
@@ -294,19 +313,15 @@ void drivercontrol(void) {
     if(Controller1.ButtonDown.pressing()){
       RobotReverseVariable = -1;
     }
-    if(Controller1.ButtonLeft.pressing()){
-      if(RobotLaunchVariable != 0){
-        RobotLaunchVariable = RobotLaunchVariable - 25;
-      }
-      Controller1.Screen.print(RobotLaunchVariable);
-      wait(500, msec);
+    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 0)){
+        RobotLaunchVariable += 10;
+        Controller1.Screen.clearLine();
+        Controller1.Screen.print("%i", RobotLaunchVariable);
     }
-    if(Controller1.ButtonRight.pressing()){
-      if(RobotReverseVariable != 100){
-        RobotLaunchVariable = RobotLaunchVariable + 25;
-      }
-      Controller1.Screen.print(RobotLaunchVariable);
-      wait(500, msec);
+    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 100)){
+        RobotLaunchVariable -= 10;
+        Controller1.Screen.clearLine();
+        Controller1.Screen.print("%i", RobotLaunchVariable);
     }
     // Controller1.Screen.clearLine();
     // Controller1.Screen.setCursor(1, 1);
