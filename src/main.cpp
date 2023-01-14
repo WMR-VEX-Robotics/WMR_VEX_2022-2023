@@ -20,10 +20,10 @@ brain Brain;
 
 // VEXcode device constructors
 controller Controller1 = controller(primary);
-motor LeftFront = motor(PORT1, ratio6_1, false);
-motor LeftRear = motor(PORT2, ratio6_1, false);
-motor RightFront = motor(PORT3, ratio6_1, false);
-motor RightRear = motor(PORT4, ratio6_1, true);
+motor LeftFront = motor(PORT11, ratio6_1, true);
+motor LeftRear = motor(PORT12, ratio6_1, false);
+motor RightFront = motor(PORT13, ratio6_1, false);
+motor RightRear = motor(PORT14, ratio6_1, true);
 motor Vacuum = motor(PORT5, ratio6_1, true);
 motor Launcher = motor(PORT6, ratio18_1, true);
 motor Flywheel1 = motor(PORT7, ratio18_1, true);
@@ -32,9 +32,9 @@ pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
-bool manual = false;
 bool release = false;
 int RobotReverseVariable = 1;
+int RobotLaunchVariable = 100;
 int auton = 0;
 int AutonMin = 0;
 int AutonMax = 6;
@@ -49,14 +49,6 @@ void StopAllChasis(void) {
   LeftRear.stop(hold);
   RightFront.stop(hold);
   RightRear.stop(hold);
-}
-
-void manualControl(void) {
-  if(manual == true) {
-    manual = false;
-  } else {
-    manual = true;
-  }
 }
 
 void robotReverse(void) {
@@ -271,38 +263,50 @@ void autonomous(void) {
   }
 }
 
-// *************** USER CONTROL ***************
+// ************** DRIVER CONTROL **************
 
-void usercontrol(void) {
+void drivercontrol(void) {
   while (1) {
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
-    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable), percent);
-    if (Controller1.ButtonL1.pressing()) {
-      if (RobotReverseVariable == 1) {
-        RobotReverseVariable = -1;
-      } else {
-        RobotReverseVariable = 1;
-      }
-      wait(250, msec);
-    }
-    if (Controller1.ButtonR1.pressing()) {
-      manualControl();
-      wait(250, msec);
-    }
+    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
     if(Controller1.ButtonL2.pressing()) {
-      useFlywheel(100);
+      useFlywheel(RobotLaunchVariable);
+    } else {
+      useFlywheel(0);
     }
     if (Controller1.ButtonR2.pressing()) {
       useLauncher(100);
+    } else {
+      // useLauncher(0);
     }
     if(Controller1.ButtonA.pressing()){
       useVacuum(100);
     }
     if(Controller1.ButtonB.pressing()){
       useVacuum(0);
+    }
+    if(Controller1.ButtonUp.pressing()){
+      RobotReverseVariable = 1;
+    }
+    if(Controller1.ButtonDown.pressing()){
+      RobotReverseVariable = -1;
+    }
+    if(Controller1.ButtonLeft.pressing()){
+      if(RobotLaunchVariable != 0){
+        RobotLaunchVariable = RobotLaunchVariable - 25;
+      }
+      Controller1.Screen.print(RobotLaunchVariable);
+      wait(500, msec);
+    }
+    if(Controller1.ButtonRight.pressing()){
+      if(RobotReverseVariable != 100){
+        RobotLaunchVariable = RobotLaunchVariable + 25;
+      }
+      Controller1.Screen.print(RobotLaunchVariable);
+      wait(500, msec);
     }
     // Controller1.Screen.clearLine();
     // Controller1.Screen.setCursor(1, 1);
@@ -363,7 +367,7 @@ void usercontrol(void) {
 
 int main() {
   Competition.autonomous(autonomous);
-  Competition.drivercontrol(usercontrol);
+  Competition.drivercontrol(drivercontrol);
   pre_auton();
   while (true) {
     wait(100, msec);
