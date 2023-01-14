@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       Carlo and Erik                                            */
+/*    Author:       Carlo, Jacob, and Erik                                    */
 /*    Created:      Tue Sep 27 2022                                           */
 /*    Description:  V5 project                                                */
 /*                                                                            */
