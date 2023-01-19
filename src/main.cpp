@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       Carlo and Erik                                            */
+/*    Author:       Carlo, Jacob, and Erik                                    */
 /*    Created:      Tue Sep 27 2022                                           */
 /*    Description:  V5 project                                                */
 /*                                                                            */
@@ -61,8 +61,12 @@ void robotReverse(void) {
 
 // **************** VACUUM ********************
 
-void useVacuum(int percent){
-  Vacuum.spin(forward, percent, pct);
+void useForwardVacuum(int n){
+  Vacuum.spin(forward, n, pct);
+}
+
+void useReverseVacuum(int m){
+  Vacuum.spin(reverse, m, pct);
 }
 
 // *************** LAUNCHER *******************
@@ -79,11 +83,18 @@ void useLauncher(int percent) {
 
 // *************** FLYWHEEL *******************
 
-void useFlywheel(int percent) {
+void useForwardFlywheel(int percent) {
   Flywheel1.setStopping(coast);
   Flywheel1.spin(reverse, percent, pct);
   Flywheel2.setStopping(coast);
   Flywheel2.spin(forward, percent, pct);
+}
+
+void useReverseFlywheel(int percent) {
+  Flywheel1.setStopping(coast);
+  Flywheel1.spin(forward, percent, pct);
+  Flywheel2.setStopping(coast);
+  Flywheel2.spin(reverse, percent, pct);
 }
 
 // *************** PNEUMATICS *****************
@@ -218,33 +229,33 @@ void autonomous(void) {
   switch (auton) {
     case 0:
       StopAllChasis();
-      LeftFront.spin(forward, 100, percent);
-      RightFront.spin(forward, 100, percent);
-      LeftRear.spin(forward, 100, percent);
-      RightRear.spin(forward, 100, percent);
-      useVacuum(100);
-      wait(2000, msec);
-      useVacuum(0);
-      LeftFront.spin(forward, 100, percent);
-      RightFront.spin(forward, 100, percent);
-      LeftRear.spin(forward, 100, percent);
-      RightRear.spin(forward, 100, percent);
-      wait(5000, msec);
-      LeftFront.stop();
-      RightFront.stop();
-      LeftRear.stop();
-      RightRear.stop();
-      LeftFront.spin(reverse, 50, percent);
-      RightFront.spin(forward, 50, percent);
-      LeftRear.spin(reverse, 50, percent);
-      RightRear.spin(forward, 50, percent);
-      wait(90, msec);
-      useFlywheel(100);
-      wait(1500, msec);
-      for(int i=0; i<3; i++) {
-        useLauncher(100);
-        wait(150, msec);
-      }
+      // LeftFront.spin(forward, 100, percent);
+      // RightFront.spin(forward, 100, percent);
+      // LeftRear.spin(forward, 100, percent);
+      // RightRear.spin(forward, 100, percent);
+      // useForwardVacuum(100);
+      // wait(2000, msec);
+      // useForwardVacuum(0);
+      // LeftFront.spin(forward, 100, percent);
+      // RightFront.spin(forward, 100, percent);
+      // LeftRear.spin(forward, 100, percent);
+      // RightRear.spin(forward, 100, percent);
+      // wait(5000, msec);
+      // LeftFront.stop();
+      // RightFront.stop();
+      // LeftRear.stop();
+      // RightRear.stop();
+      // LeftFront.spin(reverse, 50, percent);
+      // RightFront.spin(forward, 50, percent);
+      // LeftRear.spin(reverse, 50, percent);
+      // RightRear.spin(forward, 50, percent);
+      // wait(90, msec);
+      // useForwardFlywheel(100);
+      // wait(1500, msec);
+      // for(int i=0; i<3; i++) {
+      //   useLauncher(100);
+      //   wait(150, msec);
+      // }
       break;
     case 1:
       break;
@@ -268,45 +279,53 @@ void autonomous(void) {
 void drivercontrol(void) {
   while (1) {
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
-    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
+    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
     if(Controller1.ButtonL2.pressing()) {
-      useFlywheel(RobotLaunchVariable);
+      useForwardFlywheel(RobotLaunchVariable);
+    } else if(Controller1.ButtonL1.pressing()) {
+      useReverseFlywheel(RobotLaunchVariable);
     } else {
-      useFlywheel(0);
+      useForwardFlywheel(0);
     }
+    
     if (Controller1.ButtonR2.pressing()) {
       useLauncher(100);
     } else {
       // useLauncher(0);
     }
     if(Controller1.ButtonA.pressing()){
-      useVacuum(100);
+      useForwardVacuum(100);
     }
     if(Controller1.ButtonB.pressing()){
-      useVacuum(0);
+      useForwardVacuum(0);
     }
-    if(Controller1.ButtonUp.pressing()){
+    if(Controller1.ButtonX.pressing()){
+      useReverseVacuum(100);
+    }
+    /*if(Controller1.ButtonUp.pressing()){
       RobotReverseVariable = 1;
+      Controller1.Screen.print(RobotReverseVariable);
     }
     if(Controller1.ButtonDown.pressing()){
       RobotReverseVariable = -1;
+      Controller1.Screen.print(RobotReverseVariable);
+    }*/
+    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 50)){
+        RobotLaunchVariable -= 10;
+        Controller1.Screen.clearLine();
+        Controller1.Screen.newLine();
+        Controller1.Screen.print(RobotLaunchVariable);
+        wait(250, msec);
     }
-    if(Controller1.ButtonLeft.pressing()){
-      if(RobotLaunchVariable != 0){
-        RobotLaunchVariable = RobotLaunchVariable - 25;
-      }
-      Controller1.Screen.print(RobotLaunchVariable);
-      wait(500, msec);
-    }
-    if(Controller1.ButtonRight.pressing()){
-      if(RobotReverseVariable != 100){
-        RobotLaunchVariable = RobotLaunchVariable + 25;
-      }
-      Controller1.Screen.print(RobotLaunchVariable);
-      wait(500, msec);
+    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 100)){
+        RobotLaunchVariable += 10;
+        Controller1.Screen.clearLine();
+        Controller1.Screen.newLine();
+        Controller1.Screen.print(RobotLaunchVariable);
+        wait(250, msec);
     }
     // Controller1.Screen.clearLine();
     // Controller1.Screen.setCursor(1, 1);
