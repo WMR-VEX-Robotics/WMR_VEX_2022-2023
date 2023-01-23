@@ -332,29 +332,29 @@ void drivercontrol(void) {
     // Controller1.Screen.clearLine();
     // Controller1.Screen.newLine();
     // Controller1.Screen.print("Efficiency: ");
-    // Controller1.Screen.print(Launch.efficiency(percent));
+    // Controller1.Screen.print(Launcher.efficiency(percent));
     // Controller1.Screen.setCursor(2, 2);
     // Controller1.Screen.clearLine();
     // Controller1.Screen.newLine();
     // Controller1.Screen.print("Temps: ");
-    // Controller1.Screen.print(Launch.temperature(percent));
+    // Controller1.Screen.print(Launcher.temperature(percent));
     // Controller1.Screen.setCursor(3, 3);
     // Controller1.Screen.clearLine();
     // Controller1.Screen.newLine();
     // Controller1.Screen.print("Torque: ");
-    // Controller1.Screen.print(Launch.torque(Nm));
+    // Controller1.Screen.print(Launcher.torque(Nm));
     // Controller1.Screen.setCursor(4, 4);
     // Controller1.Screen.clearLine();
     // Controller1.Screen.newLine();
     // Controller1.Screen.print("Wattage: ");
-    // Controller1.Screen.print(Launch.power());
+    // Controller1.Screen.print(Launcher.power());
     
     // char color;
-    // if (Launch.temperature(percent) > 75) {
+    // if (Launcher.temperature(percent) > 75) {
     //   color = red;
-    // } else if (Launch.temperature(percent) > 50 && Launch.temperature(percent) <= 75) {
+    // } else if (Launcher.temperature(percent) > 50 && Launcher.temperature(percent) <= 75) {
     //   color = orange;
-    // } else if (Launch.temperature(percent) > 25 && Launch.temperature(percent) <= 50) {
+    // } else if (Launcher.temperature(percent) > 25 && Launcher.temperature(percent) <= 50) {
     //   color = yellow;
     // } else {
     //   color = green;
@@ -362,7 +362,7 @@ void drivercontrol(void) {
     
     // Controller1.Screen.clearScreen();
     
-    // length = Launch.efficient(percent);
+    // length = Launcher.efficient(percent);
     // for (int i = 0; i < 5; i++) {
     //   lengthSum = lengthSum + length;
     //   if (i == 5) {
