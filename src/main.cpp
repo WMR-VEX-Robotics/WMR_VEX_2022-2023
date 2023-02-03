@@ -369,7 +369,7 @@ void drivercontrol(void) {
         Controller1.Screen.print(RobotLaunchVariable);
         wait(250, msec);
     }
-    if(Controller1.ButtonDown.pressing() && (Brain.timer(sec) - startTime > 90)){
+    if(Controller1.ButtonDown.pressing() /*&& (Brain.timer(sec) - startTime > 90)*/){
       P1.open();
     }
     // Controller1.Screen.clearLine();
