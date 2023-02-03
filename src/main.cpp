@@ -20,27 +20,28 @@ brain Brain;
 
 // VEXcode device constructors
 controller Controller1 = controller(primary);
-motor LeftFront = motor(PORT11, ratio6_1, false);
-motor LeftRear = motor(PORT12, ratio6_1, false);
-motor RightFront = motor(PORT13, ratio6_1, true);
-motor RightRear = motor(PORT14, ratio6_1, true);
-motor Vacuum = motor(PORT5, ratio6_1, true);
-motor Launcher = motor(PORT6, ratio18_1, true);
-motor Flywheel1 = motor(PORT7, ratio18_1, true);
-motor Flywheel2 = motor(PORT8, ratio18_1, true);
+motor LeftFront = motor(PORT8, ratio6_1, false);
+motor LeftRear = motor(PORT7, ratio6_1, false);
+motor RightFront = motor(PORT10, ratio6_1, true);
+motor RightRear = motor(PORT9, ratio6_1, true);
+motor Vacuum = motor(PORT20, ratio6_1, true);
+motor Launch = motor(PORT19, ratio18_1, true);
+motor Flywheel1 = motor(PORT4, ratio18_1, true);
+motor Flywheel2 = motor(PORT5, ratio18_1, false);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
 bool release = false;
-int RobotReverseVariable = 1;
-int RobotLaunchVariable = 100;
+int RobotLaunchVariable = 7;
 int auton = 0;
 int AutonMin = 0;
 int AutonMax = 6;
 int length = 0;
 int lengthSum = 0;
 int lengthAvg = 0;
+int startTime = 0;
+
 
 // ***************** DRIVE ********************
 
@@ -51,50 +52,32 @@ void StopAllChasis(void) {
   RightRear.stop(hold);
 }
 
-void robotReverse(void) {
-  if (RobotReverseVariable == 1) {
-    RobotReverseVariable = -1;
-  } else {
-    RobotReverseVariable = 1;
-  }
-}
-
 // **************** VACUUM ********************
 
-void useForwardVacuum(int n){
-  Vacuum.spin(forward, n, pct);
+void useForwardVacuum(int percent){
+  Vacuum.spin(forward, percent, pct);
 }
 
-void useReverseVacuum(int m){
-  Vacuum.spin(reverse, m, pct);
+void useReverseVacuum(int percent){
+  Vacuum.spin(reverse, percent, pct);
 }
 
 // *************** LAUNCHER *******************
 
-void useLauncher(int percent) {
-  Launcher.setStopping(brake);
-  Launcher.spin(reverse, percent, pct);
-  wait(125, msec);
-  Launcher.setStopping(brake);
-  Launcher.spin(forward, percent, pct);
-  wait(250, msec);
-  Launcher.stop();
+void useLauncher() {
+  Launch.spinToPosition(180, degrees, 200, rpm, true);
+  Launch.spinToPosition(0, degrees, 200, rpm, true);
 }
 
 // *************** FLYWHEEL *******************
 
-void useForwardFlywheel(int percent) {
+void useForwardFlywheel() {
+  Flywheel1.setVelocity(300, rpm);
+  Flywheel2.setVelocity(300, rpm);
   Flywheel1.setStopping(coast);
-  Flywheel1.spin(reverse, percent, pct);
+  Flywheel1.spin(reverse, RobotLaunchVariable, volt);
   Flywheel2.setStopping(coast);
-  Flywheel2.spin(forward, percent, pct);
-}
-
-void useReverseFlywheel(int percent) {
-  Flywheel1.setStopping(coast);
-  Flywheel1.spin(forward, percent, pct);
-  Flywheel2.setStopping(coast);
-  Flywheel2.spin(reverse, percent, pct);
+  Flywheel2.spin(forward, RobotLaunchVariable, volt);
 }
 
 // *************** PNEUMATICS *****************
@@ -219,7 +202,7 @@ void selectAuton() {
 // **************** AUTONOMOUS ****************
 
 void pre_auton(void) {
-  P1.open();
+  P1.close();
   Brain.Screen.printAt(1, 40, "pre auton is running");
   drawGUI();
   Brain.Screen.pressed(selectAuton);
@@ -258,16 +241,87 @@ void autonomous(void) {
       // }
       break;
     case 1:
+      Vacuum.spinToPosition(90, degrees);
       break;
     case 2:
+      Flywheel1.spin(forward);
+      Flywheel2.spin(forward);
+      wait(1, sec);
+      for(int i = 0; i < 2; i++){
+        useLauncher();
+      }
       break;
     case 3:
+      Vacuum.spinToPosition(90, degrees);
+      LeftFront.spinFor(forward, 360, degrees);
+      RightFront.spinFor(forward, 360, degrees);
+      LeftRear.spinFor(forward, 360, degrees);
+      RightRear.spinFor(forward, 360, degrees);
+
+      LeftFront.spinFor(reverse, 360, degrees);
+      RightFront.spinFor(forward, 360, degrees);
+      LeftRear.spinFor(reverse, 360, degrees);
+      RightRear.spinFor(forward, 360, degrees);
+
+      Vacuum.spin(forward);
+      LeftFront.spinFor(forward, 720, degrees);
+      RightFront.spinFor(forward, 720, degrees);
+      LeftRear.spinFor(forward, 720, degrees);
+      RightRear.spinFor(forward, 720, degrees);
+      Vacuum.stop();
+
+      LeftFront.spinFor(forward, 360, degrees);
+      RightFront.spinFor(reverse, 360, degrees);
+      LeftRear.spinFor(forward, 360, degrees);
+      RightRear.spinFor(reverse, 360, degrees);
+
+      Flywheel1.spin(forward);
+      Flywheel2.spin(forward);
+      wait(1, sec);
+      for(int i = 0; i < 3; i++){
+        useLauncher();
+      }
       break;
     case 4:
+      Vacuum.spinToPosition(90, degrees);
+      LeftFront.spinFor(forward, 360, degrees);
+      RightFront.spinFor(forward, 360, degrees);
+      LeftRear.spinFor(forward, 360, degrees);
+      RightRear.spinFor(forward, 360, degrees);
+
+      LeftFront.spinFor(forward, 360, degrees);
+      RightFront.spinFor(reverse, 360, degrees);
+      LeftRear.spinFor(forward, 360, degrees);
+      RightRear.spinFor(reverse, 360, degrees);
+
+      Flywheel1.spin(forward, RobotLaunchVariable, volt);
+      Flywheel2.spin(forward, RobotLaunchVariable, volt);
+      wait(1, sec);
+      for(int i = 0; i < 3; i++){
+        useLauncher();
+      }
       break;
     case 5:
+      Vacuum.spinToPosition(90, degrees);
+      LeftFront.spinFor(forward, 360, degrees);
+      RightFront.spinFor(forward, 360, degrees);
+      LeftRear.spinFor(forward, 360, degrees);
+      RightRear.spinFor(forward, 360, degrees);
+
+    LeftFront.spinFor(reverse, 360, degrees);
+      RightFront.spinFor(forward, 360, degrees);
+      LeftRear.spinFor(reverse, 360, degrees);
+      RightRear.spinFor(forward, 360, degrees);
+
+      Flywheel1.spin(forward, RobotLaunchVariable, volt);
+      Flywheel2.spin(forward, RobotLaunchVariable, volt);
+      wait(1, sec);
+      for(int i = 0; i < 3; i++){
+        useLauncher();
+      }
       break;
     case 6:
+      
       break;
     case 7:
       break;
@@ -277,24 +331,24 @@ void autonomous(void) {
 // ************** DRIVER CONTROL **************
 
 void drivercontrol(void) {
+  startTime = Brain.timer(sec);
   while (1) {
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
-    LeftFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    RightFront.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
-    LeftRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) + Controller1.Axis1.position(), percent);
-    RightRear.spin(forward, (Controller1.Axis3.position() * RobotReverseVariable) - Controller1.Axis1.position(), percent);
+    LeftFront.spin(forward, Controller1.Axis3.position() + Controller1.Axis1.position(), percent);
+    RightFront.spin(forward, Controller1.Axis3.position() - Controller1.Axis1.position(), percent);
+    LeftRear.spin(forward, Controller1.Axis3.position() + Controller1.Axis1.position(), percent);
+    RightRear.spin(forward, Controller1.Axis3.position() - Controller1.Axis1.position(), percent);
     if(Controller1.ButtonL2.pressing()) {
-      useForwardFlywheel(RobotLaunchVariable);
-    } else if(Controller1.ButtonL1.pressing()) {
-      useReverseFlywheel(RobotLaunchVariable);
-    } else {
-      useForwardFlywheel(0);
+      useForwardFlywheel();
+    // } else if(Controller1.ButtonL1.pressing()) {
+    //     useReverseFlywheel();
+    } 
+    else {
+      Flywheel1.stop(coast);
+      Flywheel2.stop(coast);
     }
-    
     if (Controller1.ButtonR2.pressing()) {
-      useLauncher(100);
-    } else {
-      // useLauncher(0);
+      useLauncher();
     }
     if(Controller1.ButtonA.pressing()){
       useForwardVacuum(100);
@@ -302,30 +356,21 @@ void drivercontrol(void) {
     if(Controller1.ButtonB.pressing()){
       useForwardVacuum(0);
     }
-    if(Controller1.ButtonX.pressing()){
-      useReverseVacuum(100);
-    }
-    /*if(Controller1.ButtonUp.pressing()){
-      RobotReverseVariable = 1;
-      Controller1.Screen.print(RobotReverseVariable);
-    }
-    if(Controller1.ButtonDown.pressing()){
-      RobotReverseVariable = -1;
-      Controller1.Screen.print(RobotReverseVariable);
-    }*/
-    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 50)){
-        RobotLaunchVariable -= 10;
-        Controller1.Screen.clearLine();
-        Controller1.Screen.newLine();
+    // if(Controller1.ButtonX.pressing()){
+    //   useReverseVacuum(100);
+    // }
+    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
+        RobotLaunchVariable -= 1;
         Controller1.Screen.print(RobotLaunchVariable);
         wait(250, msec);
     }
-    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 100)){
-        RobotLaunchVariable += 10;
-        Controller1.Screen.clearLine();
-        Controller1.Screen.newLine();
+    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 12)){
+        RobotLaunchVariable += 1;
         Controller1.Screen.print(RobotLaunchVariable);
         wait(250, msec);
+    }
+    if(Controller1.ButtonDown.pressing() && (Brain.timer(sec) - startTime > 90)){
+      P1.open();
     }
     // Controller1.Screen.clearLine();
     // Controller1.Screen.setCursor(1, 1);

@@ -8,10 +8,11 @@ extern motor LeftFront;
 extern motor LeftRear;
 extern motor RightFront;
 extern motor RightRear;
-extern motor Spin;
+extern motor Flywheel1;
+extern motor Flywheel2;
 extern motor Launch;
-extern motor Roll;
 extern pneumatics P1;
+extern brain Brain;
 
 
 /**
