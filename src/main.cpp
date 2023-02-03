@@ -202,7 +202,7 @@ void selectAuton() {
 // **************** AUTONOMOUS ****************
 
 void pre_auton(void) {
-  P1.close();
+  P1.open();
   Brain.Screen.printAt(1, 40, "pre auton is running");
   drawGUI();
   Brain.Screen.pressed(selectAuton);
@@ -369,8 +369,11 @@ void drivercontrol(void) {
         Controller1.Screen.print(RobotLaunchVariable);
         wait(250, msec);
     }
-    if(Controller1.ButtonDown.pressing() /*&& (Brain.timer(sec) - startTime > 90)*/){
+    if(Controller1.ButtonUp.pressing() /*&& (Brain.timer(sec) - startTime > 90)*/){
       P1.open();
+    }
+    if(Controller1.ButtonDown.pressing() /*&& (Brain.timer(sec) - startTime > 90)*/){
+      P1.close();
     }
     // Controller1.Screen.clearLine();
     // Controller1.Screen.setCursor(1, 1);
@@ -423,7 +426,6 @@ void drivercontrol(void) {
     //   }
     // }
   }
-  P1.close();
   wait(20, msec);
 }
 
