@@ -356,29 +356,12 @@ void drivercontrol(void) {
     if(Controller1.ButtonB.pressing()){
       useForwardVacuum(0);
     }
-    // if(Controller1.ButtonX.pressing()){
-    //   useReverseVacuum(100);
-    // }
-    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
-        RobotLaunchVariable -= 1;
-        Controller1.Screen.print(RobotLaunchVariable);
-        wait(250, msec);
+    if(Controller1.ButtonX.pressing()){
+      useReverseVacuum(100);
     }
-    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 12)){
-        RobotLaunchVariable += 1;
-        Controller1.Screen.print(RobotLaunchVariable);
-        wait(250, msec);
+    if(Controller1.ButtonY.pressing()){
+      Vacuum.spinFor(360, degrees);
     }
-    if(Controller1.ButtonUp.pressing() /*&& (Brain.timer(sec) - startTime > 90)*/){
-      P1.open();
-    }
-    if(Controller1.ButtonDown.pressing() /*&& (Brain.timer(sec) - startTime > 90)*/){
-      P1.close();
-    }
-    // Controller1.Screen.clearLine();
-    // Controller1.Screen.setCursor(1, 1);
-    // Controller1.Screen.clearLine();
-    // Controller1.Screen.newLine();
     // Controller1.Screen.print("Efficiency: ");
     // Controller1.Screen.print(Launcher.efficiency(percent));
     // Controller1.Screen.setCursor(2, 2);
