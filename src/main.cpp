@@ -202,7 +202,7 @@ void selectAuton() {
 // **************** AUTONOMOUS ****************
 
 void pre_auton(void) {
-  P1.open();
+  // P1.open();
   Brain.Screen.printAt(1, 40, "pre auton is running");
   drawGUI();
   Brain.Screen.pressed(selectAuton);
@@ -361,6 +361,22 @@ void drivercontrol(void) {
     }
     if(Controller1.ButtonY.pressing()){
       Vacuum.spinFor(360, degrees);
+    }
+    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
+        RobotLaunchVariable -= 1;
+        Controller1.Screen.print(RobotLaunchVariable);
+        wait(250, msec);
+    }
+    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 12)){
+        RobotLaunchVariable += 1;
+        Controller1.Screen.print(RobotLaunchVariable);
+        wait(250, msec);
+    }
+    if(Controller1.ButtonUp.pressing() && Brain.timer(sec) - startTime > 95){
+      P1.open();
+    }
+    if(Controller1.ButtonDown.pressing() && Brain.timer(sec) - startTime > 95){
+      P1.close();
     }
     // Controller1.Screen.print("Efficiency: ");
     // Controller1.Screen.print(Launcher.efficiency(percent));
