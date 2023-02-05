@@ -65,8 +65,9 @@ void useReverseVacuum(int percent){
 // *************** LAUNCHER *******************
 
 void useLauncher() {
-  Launch.spinToPosition(180, degrees, 200, rpm, true);
-  Launch.spinToPosition(0, degrees, 200, rpm, true);
+  Launch.spinToPosition(180, degrees, 200, rpm, false);
+  wait(0.25, seconds);
+  Launch.spinToPosition(0, degrees, 200, rpm, false);
 }
 
 // *************** FLYWHEEL *******************
@@ -210,7 +211,7 @@ void pre_auton(void) {
 
 void autonomous(void) {
   switch (auton) {
-    case 0:
+    case 0:  
       StopAllChasis();
       // LeftFront.spin(forward, 100, percent);
       // RightFront.spin(forward, 100, percent);
@@ -241,7 +242,16 @@ void autonomous(void) {
       // }
       break;
     case 1:
-      Vacuum.spinToPosition(90, degrees);
+      LeftFront.setVelocity(200, rpm);
+      RightFront.setVelocity(200, rpm);
+      LeftRear.setVelocity(200, rpm);
+      RightRear.setVelocity(200, rpm);
+      Vacuum.setVelocity(200, rpm);
+      LeftFront.startSpinFor(180, degrees);
+      LeftRear.startSpinFor(180, degrees);
+      RightFront.startSpinFor(180, degrees);
+      RightRear.spinFor(180, degrees);
+      Vacuum.startSpinFor(-700, degrees);
       break;
     case 2:
       Flywheel1.spin(forward);
@@ -308,7 +318,7 @@ void autonomous(void) {
       LeftRear.spinFor(forward, 360, degrees);
       RightRear.spinFor(forward, 360, degrees);
 
-    LeftFront.spinFor(reverse, 360, degrees);
+      LeftFront.spinFor(reverse, 360, degrees);
       RightFront.spinFor(forward, 360, degrees);
       LeftRear.spinFor(reverse, 360, degrees);
       RightRear.spinFor(forward, 360, degrees);
@@ -321,9 +331,66 @@ void autonomous(void) {
       }
       break;
     case 6:
+    LeftFront.setVelocity(200, rpm);
+      RightFront.setVelocity(200, rpm);
+      LeftRear.setVelocity(200, rpm);
+      RightRear.setVelocity(200, rpm);
+      Vacuum.setVelocity(200, rpm);
+
       
+      LeftFront.startSpinFor(180, degrees);
+      LeftRear.startSpinFor(180, degrees);
+      RightFront.startSpinFor(180, degrees);
+      RightRear.spinFor(180, degrees);
+      Vacuum.spinFor(-720, degrees);
+
+      LeftFront.startSpinFor(-720, degrees);
+      LeftRear.startSpinFor(-720, degrees);
+      RightFront.startSpinFor(-720, degrees);
+      RightRear.spinFor(-720, degrees);
+
+      LeftFront.spinFor(forward, 360, degrees);
+      RightFront.spinFor(reverse, 360, degrees);
+      LeftRear.spinFor(forward, 360, degrees);
+      RightRear.spinFor(reverse, 360, degrees);
+      P1.open();
       break;
     case 7:
+    Flywheel1.setVelocity(100, pct);
+      Flywheel2.setVelocity(100, pct);
+      wait(2, sec);
+      for(int i = 0; i < 3; i++){
+        useLauncher();
+        wait(0.25, seconds);
+      }
+      LeftFront.setVelocity(200, rpm);
+      RightFront.setVelocity(200, rpm);
+      LeftRear.setVelocity(200, rpm);
+      RightRear.setVelocity(200, rpm);
+      Vacuum.setVelocity(200, rpm);
+
+      LeftFront.startSpinFor(180, degrees);
+      LeftRear.startSpinFor(180, degrees);
+      RightFront.startSpinFor(180, degrees);
+      RightRear.spinFor(180, degrees);
+
+      Vacuum.startSpinFor(-720, degrees);
+      LeftFront.startSpinFor(-720, degrees);
+      LeftRear.startSpinFor(-720, degrees);
+      RightFront.startSpinFor(-720, degrees);
+      RightRear.spinFor(-720, degrees);
+
+      LeftFront.startSpinFor(forward, 360, degrees);
+      RightFront.startSpinFor(reverse, 360, degrees);
+      LeftRear.startSpinFor(forward, 360, degrees);
+      RightRear.startSpinFor(reverse, 360, degrees);
+
+      LeftFront.startSpinFor(720, degrees);
+      LeftRear.startSpinFor(720, degrees);
+      RightFront.startSpinFor(720, degrees);
+      RightRear.spinFor(720, degrees);
+
+      Vacuum.startSpinFor(-360, degrees);
       break;
   }
 }
@@ -331,7 +398,8 @@ void autonomous(void) {
 // ************** DRIVER CONTROL **************
 
 void drivercontrol(void) {
-  startTime = Brain.timer(sec);
+  // startTime = Brain.timer(sec);
+ 
   while (1) {
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
     LeftFront.spin(forward, Controller1.Axis3.position() + Controller1.Axis1.position(), percent);
@@ -360,7 +428,7 @@ void drivercontrol(void) {
       useReverseVacuum(100);
     }
     if(Controller1.ButtonY.pressing()){
-      Vacuum.spinFor(360, degrees);
+      Vacuum.spinFor(180, degrees);
     }
     if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
         RobotLaunchVariable -= 1;
@@ -372,10 +440,10 @@ void drivercontrol(void) {
         Controller1.Screen.print(RobotLaunchVariable);
         wait(250, msec);
     }
-    if(Controller1.ButtonUp.pressing() && Brain.timer(sec) - startTime > 95){
+    if(Controller1.ButtonUp.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
       P1.open();
     }
-    if(Controller1.ButtonDown.pressing() && Brain.timer(sec) - startTime > 95){
+    if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
       P1.close();
     }
     // Controller1.Screen.print("Efficiency: ");
