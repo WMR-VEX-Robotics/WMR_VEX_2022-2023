@@ -164,6 +164,7 @@ void autonomous(void) {
       break;
     case 1:
       // spins up roller on left
+
       LeftFront.startSpinFor(180, degrees);
       LeftRear.startSpinFor(180, degrees);
       RightFront.startSpinFor(180, degrees);
@@ -171,143 +172,101 @@ void autonomous(void) {
       Vacuum.startSpinFor(-180, degrees);
       break;
     case 2:
-      Flywheel1.spin(forward);
-      Flywheel2.spin(forward);
-      wait(1, sec);
-      for(int i = 0; i < 2; i++){
-        useLauncher();
-      }
-      break;
-    case 3:
-      Vacuum.spinToPosition(90, degrees);
-      LeftFront.spinFor(forward, 360, degrees);
-      RightFront.spinFor(forward, 360, degrees);
-      LeftRear.spinFor(forward, 360, degrees);
-      RightRear.spinFor(forward, 360, degrees);
+      // spin up right roller
 
-      LeftFront.spinFor(reverse, 360, degrees);
-      RightFront.spinFor(forward, 360, degrees);
-      LeftRear.spinFor(reverse, 360, degrees);
-      RightRear.spinFor(forward, 360, degrees);
-
-      Vacuum.spin(forward);
-      LeftFront.spinFor(forward, 720, degrees);
-      RightFront.spinFor(forward, 720, degrees);
-      LeftRear.spinFor(forward, 720, degrees);
-      RightRear.spinFor(forward, 720, degrees);
-      Vacuum.stop();
-
-      LeftFront.spinFor(forward, 360, degrees);
-      RightFront.spinFor(reverse, 360, degrees);
-      LeftRear.spinFor(forward, 360, degrees);
-      RightRear.spinFor(reverse, 360, degrees);
-
-      Flywheel1.spin(forward);
-      Flywheel2.spin(forward);
-      wait(1, sec);
-      for(int i = 0; i < 3; i++){
-        useLauncher();
-      }
-      break;
-    case 4:
-      Vacuum.spinToPosition(90, degrees);
-      LeftFront.spinFor(forward, 360, degrees);
-      RightFront.spinFor(forward, 360, degrees);
-      LeftRear.spinFor(forward, 360, degrees);
-      RightRear.spinFor(forward, 360, degrees);
-
-      LeftFront.spinFor(forward, 360, degrees);
-      RightFront.spinFor(reverse, 360, degrees);
-      LeftRear.spinFor(forward, 360, degrees);
-      RightRear.spinFor(reverse, 360, degrees);
-
-      Flywheel1.spin(forward, RobotLaunchVariable, volt);
-      Flywheel2.spin(forward, RobotLaunchVariable, volt);
-      wait(1, sec);
-      for(int i = 0; i < 3; i++){
-        useLauncher();
-      }
-      break;
-    case 5:
-      Vacuum.spinToPosition(90, degrees);
-      LeftFront.spinFor(forward, 360, degrees);
-      RightFront.spinFor(forward, 360, degrees);
-      LeftRear.spinFor(forward, 360, degrees);
-      RightRear.spinFor(forward, 360, degrees);
-
-      LeftFront.spinFor(reverse, 360, degrees);
-      RightFront.spinFor(forward, 360, degrees);
-      LeftRear.spinFor(reverse, 360, degrees);
-      RightRear.spinFor(forward, 360, degrees);
-
-      Flywheel1.spin(forward, RobotLaunchVariable, volt);
-      Flywheel2.spin(forward, RobotLaunchVariable, volt);
-      wait(1, sec);
-      for(int i = 0; i < 3; i++){
-        useLauncher();
-      }
-      break;
-    case 6:
-    LeftFront.setVelocity(200, rpm);
-      RightFront.setVelocity(200, rpm);
-      LeftRear.setVelocity(200, rpm);
-      RightRear.setVelocity(200, rpm);
-      Vacuum.setVelocity(200, rpm);
-
-      
       LeftFront.startSpinFor(180, degrees);
       LeftRear.startSpinFor(180, degrees);
       RightFront.startSpinFor(180, degrees);
       RightRear.spinFor(180, degrees);
-      Vacuum.spinFor(-720, degrees);
 
-      LeftFront.startSpinFor(-720, degrees);
-      LeftRear.startSpinFor(-720, degrees);
-      RightFront.startSpinFor(-720, degrees);
-      RightRear.spinFor(-720, degrees);
+      LeftFront.startSpinFor(180, degrees);
+      LeftRear.startSpinFor(180, degrees);
+      RightFront.startSpinFor(-180, degrees);
+      RightRear.spinFor(-180, degrees);
 
-      LeftFront.spinFor(forward, 360, degrees);
-      RightFront.spinFor(reverse, 360, degrees);
-      LeftRear.spinFor(forward, 360, degrees);
-      RightRear.spinFor(reverse, 360, degrees);
-      P1.open();
+      LeftFront.startSpinFor(-180, degrees);
+      LeftRear.startSpinFor(-180, degrees);
+      RightFront.startSpinFor(-180, degrees);
+      RightRear.spinFor(-180, degrees);
+
+      LeftFront.startSpinFor(-180, degrees);
+      LeftRear.startSpinFor(-180, degrees);
+      RightFront.startSpinFor(180, degrees);
+      RightRear.spinFor(180, degrees);
+
+      LeftFront.startSpinFor(-180, degrees);
+      LeftRear.startSpinFor(-180, degrees);
+      RightFront.startSpinFor(-180, degrees);
+      RightRear.spinFor(-180, degrees);
+
+      Vacuum.startSpinFor(-180, degrees);
       break;
-    case 7:
-    Flywheel1.setVelocity(100, pct);
-      Flywheel2.setVelocity(100, pct);
+    case 3:
+      // spin left roller then shoot
+
+      LeftFront.startSpinFor(180, degrees);
+      LeftRear.startSpinFor(180, degrees);
+      RightFront.startSpinFor(180, degrees);
+      RightRear.spinFor(180, degrees);
+      Vacuum.startSpinFor(-180, degrees);
+
+      LeftFront.startSpinFor(-180, degrees);
+      LeftRear.startSpinFor(-180, degrees);
+
+      Flywheel1.spin(forward);
+      Flywheel2.spin(forward);
       wait(2, sec);
       for(int i = 0; i < 3; i++){
         useLauncher();
-        wait(0.25, seconds);
+        wait(.25, sec);
       }
-      LeftFront.setVelocity(200, rpm);
-      RightFront.setVelocity(200, rpm);
-      LeftRear.setVelocity(200, rpm);
-      RightRear.setVelocity(200, rpm);
-      Vacuum.setVelocity(200, rpm);
+      break;
+    case 4:
+      // spin right roller then shoot
 
       LeftFront.startSpinFor(180, degrees);
       LeftRear.startSpinFor(180, degrees);
       RightFront.startSpinFor(180, degrees);
       RightRear.spinFor(180, degrees);
 
-      Vacuum.startSpinFor(-720, degrees);
-      LeftFront.startSpinFor(-720, degrees);
-      LeftRear.startSpinFor(-720, degrees);
-      RightFront.startSpinFor(-720, degrees);
-      RightRear.spinFor(-720, degrees);
+      LeftFront.startSpinFor(180, degrees);
+      LeftRear.startSpinFor(180, degrees);
+      RightFront.startSpinFor(-180, degrees);
+      RightRear.spinFor(-180, degrees);
 
-      LeftFront.startSpinFor(forward, 360, degrees);
-      RightFront.startSpinFor(reverse, 360, degrees);
-      LeftRear.startSpinFor(forward, 360, degrees);
-      RightRear.startSpinFor(reverse, 360, degrees);
+      LeftFront.startSpinFor(-180, degrees);
+      LeftRear.startSpinFor(-180, degrees);
+      RightFront.startSpinFor(-180, degrees);
+      RightRear.spinFor(-180, degrees);
 
-      LeftFront.startSpinFor(720, degrees);
-      LeftRear.startSpinFor(720, degrees);
-      RightFront.startSpinFor(720, degrees);
-      RightRear.spinFor(720, degrees);
+      LeftFront.startSpinFor(-180, degrees);
+      LeftRear.startSpinFor(-180, degrees);
+      RightFront.startSpinFor(180, degrees);
+      RightRear.spinFor(180, degrees);
 
-      Vacuum.startSpinFor(-360, degrees);
+      LeftFront.startSpinFor(-180, degrees);
+      LeftRear.startSpinFor(-180, degrees);
+      RightFront.startSpinFor(-180, degrees);
+      RightRear.spinFor(-180, degrees);
+
+      Vacuum.startSpinFor(-180, degrees);
+
+      Flywheel1.spin(forward);
+      Flywheel2.spin(forward);
+      wait(2, sec);
+      for(int i = 0; i < 3; i++){
+        useLauncher();
+        wait(.25, sec);
+      }
+      break;
+    case 5:
+      // spin left roller, shoot, get more discs, shoot
+      break;
+    case 6:
+      // spin right roller, shoot, get more discs, shoot
+      break;
+    case 7:
+      // spin left rollers, shoot preload, pick up, shoot, spick up, shoot, spin right rollers, pick up, shoot, spick up, shoot
       break;
   }
 }
