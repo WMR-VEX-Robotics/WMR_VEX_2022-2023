@@ -325,8 +325,6 @@ void drivercontrol(void) {
     RightRear.spin(forward, Controller1.Axis3.position() - Controller1.Axis1.position(), percent);
     if(Controller1.ButtonL2.pressing()) {
       useForwardFlywheel();
-    // } else if(Controller1.ButtonL1.pressing()) {
-    //     useReverseFlywheel();
     } 
     else {
       Flywheel1.stop(coast);
