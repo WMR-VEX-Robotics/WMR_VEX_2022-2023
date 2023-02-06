@@ -81,24 +81,7 @@ void useForwardFlywheel() {
   Flywheel2.spin(forward, RobotLaunchVariable, volt);
 }
 
-// *************** PNEUMATICS *****************
 
-// void usePneumatics(void){
-//   if (release == true) {
-//     vex::pneumatics::open();
-//   } else {
-//     vex::pneumatics::closed();
-//   }
-// }
-
-// *************** BRAIN PRINT ****************
-
-// void print(int per, bool man) {
-//   Controller1.Screen.clearScreen();
-//   Controller1.Screen.print("%i%", per);
-//   Controller1.Screen.newLine();
-//   Controller1.Screen.print("%s", manual ? "true" : "false");
-// }
 
 void drawGUI() {
   // Draws 2 buttons to be used for selecting auto
@@ -164,42 +147,6 @@ void selectAuton() {
   Brain.Screen.setFillColor(black);
 }
 
-//********* AUTONOMOUS DRIVE FUNCTIONS ********
-
-// Example: driveForward(14, 75);
-// Inches is in inches, velocity is in percent
-// 12.57 is the conversion from rotations to inches, making the function easier to use in the scale of the arena
-// 12.57 isnt the right number, needs to be changed
-// spinFor (double rotation, rotationUnits units, double velocity, velocityUnits units_v, bool waitForCompletion=true)
-
-// void driveForward(double inches, double velocity) {
-//   LeftFront.spinFor(inches / 12.57, rev, velocity, pct, true);
-//   RightFront.spinFor(inches / 12.57, rev, velocity, pct, true);
-//   LeftRear.spinFor(inches / 12.57, rev, velocity, pct, true);
-//   RightRear.spinFor(inches / 12.57, rev, velocity, pct, true);
-// }
-
-// void driveBackward(double inches, double velocity) {
-//   LeftFront.spinFor(inches / -12.57, rev, velocity, pct, true);
-//   RightFront.spinFor(inches / -12.57, rev, velocity, pct, true);
-//   LeftRear.spinFor(inches / -12.57, rev, velocity, pct, true);
-//   RightRear.spinFor(inches / -12.57, rev, velocity, pct, true);
-// }
-
-// void turnRight(double degrees, double velocity) {
-//   LeftFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
-//   RightFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
-//   LeftRear.spinFor(degrees / 12.57, rev, velocity, pct, true); 
-//   RightRear.spinFor(degrees / -12.57, rev, velocity, pct, true);
-// }
-
-// void turnLeft(double degrees, double velocity) {
-//   LeftFront.spinFor(degrees / -12.57, rev, velocity, pct, true);
-//   RightFront.spinFor(degrees / 12.57, rev, velocity, pct, true);
-//   LeftRear.spinFor(degrees / -12.57, rev, velocity, pct, true);
-//   RightRear.spinFor(degrees / 12.57, rev, velocity, pct, true);
-// }
-
 // **************** AUTONOMOUS ****************
 
 void pre_auton(void) {
@@ -212,46 +159,16 @@ void pre_auton(void) {
 void autonomous(void) {
   switch (auton) {
     case 0:  
+      // does nothing
       StopAllChasis();
-      // LeftFront.spin(forward, 100, percent);
-      // RightFront.spin(forward, 100, percent);
-      // LeftRear.spin(forward, 100, percent);
-      // RightRear.spin(forward, 100, percent);
-      // useForwardVacuum(100);
-      // wait(2000, msec);
-      // useForwardVacuum(0);
-      // LeftFront.spin(forward, 100, percent);
-      // RightFront.spin(forward, 100, percent);
-      // LeftRear.spin(forward, 100, percent);
-      // RightRear.spin(forward, 100, percent);
-      // wait(5000, msec);
-      // LeftFront.stop();
-      // RightFront.stop();
-      // LeftRear.stop();
-      // RightRear.stop();
-      // LeftFront.spin(reverse, 50, percent);
-      // RightFront.spin(forward, 50, percent);
-      // LeftRear.spin(reverse, 50, percent);
-      // RightRear.spin(forward, 50, percent);
-      // wait(90, msec);
-      // useForwardFlywheel(100);
-      // wait(1500, msec);
-      // for(int i=0; i<3; i++) {
-      //   useLauncher(100);
-      //   wait(150, msec);
-      // }
       break;
     case 1:
-      LeftFront.setVelocity(200, rpm);
-      RightFront.setVelocity(200, rpm);
-      LeftRear.setVelocity(200, rpm);
-      RightRear.setVelocity(200, rpm);
-      Vacuum.setVelocity(200, rpm);
+      // spins up roller on left
       LeftFront.startSpinFor(180, degrees);
       LeftRear.startSpinFor(180, degrees);
       RightFront.startSpinFor(180, degrees);
       RightRear.spinFor(180, degrees);
-      Vacuum.startSpinFor(-700, degrees);
+      Vacuum.startSpinFor(-180, degrees);
       break;
     case 2:
       Flywheel1.spin(forward);
@@ -446,52 +363,7 @@ void drivercontrol(void) {
     if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
       P1.close();
     }
-    // Controller1.Screen.print("Efficiency: ");
-    // Controller1.Screen.print(Launcher.efficiency(percent));
-    // Controller1.Screen.setCursor(2, 2);
-    // Controller1.Screen.clearLine();
-    // Controller1.Screen.newLine();
-    // Controller1.Screen.print("Temps: ");
-    // Controller1.Screen.print(Launcher.temperature(percent));
-    // Controller1.Screen.setCursor(3, 3);
-    // Controller1.Screen.clearLine();
-    // Controller1.Screen.newLine();
-    // Controller1.Screen.print("Torque: ");
-    // Controller1.Screen.print(Launcher.torque(Nm));
-    // Controller1.Screen.setCursor(4, 4);
-    // Controller1.Screen.clearLine();
-    // Controller1.Screen.newLine();
-    // Controller1.Screen.print("Wattage: ");
-    // Controller1.Screen.print(Launcher.power());
-    
-    // char color;
-    // if (Launcher.temperature(percent) > 75) {
-    //   color = red;
-    // } else if (Launcher.temperature(percent) > 50 && Launcher.temperature(percent) <= 75) {
-    //   color = orange;
-    // } else if (Launcher.temperature(percent) > 25 && Launcher.temperature(percent) <= 50) {
-    //   color = yellow;
-    // } else {
-    //   color = green;
-    // }
-    
-    // Controller1.Screen.clearScreen();
-    
-    // length = Launcher.efficient(percent);
-    // for (int i = 0; i < 5; i++) {
-    //   lengthSum = lengthSum + length;
-    //   if (i == 5) {
-    //     lengthAvg = lengthSum / 5;
-    //     lengthSum = 0;
-    //     Brain.Screen.clearScreen();
-    //     Brain.Screen.setFillColor(transparent);
-    //     Brain.Screen.drawRectangle(20, 300, 50, 300);
-    //     Brain.Screen.printAt(25, 75, "0");
-    //     Brain.Screen.setFillColor(tempColor);
-    //     Brain.Screen.drawRectangle(20, lengthAvg * 3, 50, lengthAvg * 3);
-    //     Brain.Screen.printAt(25, 75, "0");
-    //   }
-    // }
+
   }
   wait(20, msec);
 }
