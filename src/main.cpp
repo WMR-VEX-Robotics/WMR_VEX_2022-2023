@@ -20,14 +20,14 @@ brain Brain;
 
 // VEXcode device constructors
 controller Controller1 = controller(primary);
-motor LeftFront = motor(PORT8, ratio6_1, false);
-motor LeftRear = motor(PORT7, ratio6_1, false);
-motor RightFront = motor(PORT10, ratio6_1, true);
-motor RightRear = motor(PORT9, ratio6_1, true);
-motor Vacuum = motor(PORT20, ratio6_1, true);
+motor LeftFront = motor(PORT8, ratio18_1, false);
+motor LeftRear = motor(PORT7, ratio18_1, false);
+motor RightFront = motor(PORT10, ratio18_1, true);
+motor RightRear = motor(PORT9, ratio18_1, true);
+motor Vacuum = motor(PORT20, ratio18_1, true);
 motor Launch = motor(PORT19, ratio18_1, true);
-motor Flywheel1 = motor(PORT4, ratio18_1, true);
-motor Flywheel2 = motor(PORT5, ratio18_1, false);
+motor Flywheel1 = motor(PORT4, ratio6_1, true);
+motor Flywheel2 = motor(PORT5, ratio6_1, false);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 
 // define variable for remote controller enable/disable
