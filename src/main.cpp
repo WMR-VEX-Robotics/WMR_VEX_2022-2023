@@ -34,7 +34,7 @@ pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
 bool RemoteControlCodeEnabled = true;
 bool release = false;
 int RobotLaunchVariable = 7;
-int auton = 0;
+int auton = 1;
 int AutonMin = 0;
 int AutonMax = 6;
 int length = 0;
@@ -164,20 +164,72 @@ void autonomous(void) {
       break;
     case 1:
       // spins up roller on left
+      LeftFront.setVelocity(75, percent);
+      RightFront.setVelocity(75, percent);
+      LeftRear.setVelocity(75, percent);
+      RightRear.setVelocity(75, percent);
+      Vacuum.setVelocity(75, percent);
 
-      LeftFront.startSpinFor(180, degrees);
-      LeftRear.startSpinFor(180, degrees);
-      RightFront.startSpinFor(180, degrees);
-      RightRear.spinFor(180, degrees);
-      Vacuum.startSpinFor(-180, degrees);
+
+      LeftFront.startSpinFor(90, degrees);
+      LeftRear.startSpinFor(90, degrees);
+      RightFront.startSpinFor(90, degrees);
+      RightRear.spinFor(90, degrees);
+      Vacuum.spinFor(-180, degrees);
+
+      LeftFront.startSpinFor(-90, degrees);
+      LeftRear.startSpinFor(-90, degrees);
+      RightFront.startSpinFor(-90, degrees);
+      RightRear.spinFor(-90, degrees);
+
+      LeftFront.startSpinFor(330, degrees);
+      LeftRear.startSpinFor(330, degrees);
+      RightFront.startSpinFor(-330, degrees);
+      RightRear.spinFor(-330, degrees);
+
+      LeftFront.startSpinFor(-775, degrees);
+      LeftRear.startSpinFor(-775, degrees);
+      RightFront.startSpinFor(-775, degrees);
+      RightRear.spinFor(-775, degrees);
+
+      LeftFront.startSpinFor(330, degrees);
+      LeftRear.startSpinFor(330, degrees);
+      RightFront.startSpinFor(-330, degrees);
+      RightRear.spinFor(-330, degrees);
+
+      // LeftFront.setBrake(coast);
+      // LeftRear.setBrake(coast);
+      // RightFront.setBrake(coast);
+      // RightRear.setBrake(coast);
+      LeftFront.setVelocity(50, percent);
+      RightFront.setVelocity(50, percent);
+      LeftRear.setVelocity(50, percent);
+      RightRear.setVelocity(50, percent);
+      Vacuum.setVelocity(100, percent);
+
+      LeftFront.startSpinFor(270, degrees);
+      LeftRear.startSpinFor(270, degrees);
+      RightFront.startSpinFor(270, degrees);
+      RightRear.spinFor(270, degrees);
+
+      Vacuum.spin(forward);
+      LeftFront.setVelocity(25, percent);
+      RightFront.setVelocity(25, percent);
+      LeftRear.setVelocity(25, percent);
+      RightRear.setVelocity(25, percent);
+wait(1, sec);
+      LeftFront.startSpinFor(360, degrees);
+      LeftRear.startSpinFor(360, degrees);
+      RightFront.startSpinFor(360, degrees);
+      RightRear.spinFor(360, degrees);
       break;
     case 2:
       // spin up right roller
 
-      LeftFront.startSpinFor(180, degrees);
-      LeftRear.startSpinFor(180, degrees);
-      RightFront.startSpinFor(180, degrees);
-      RightRear.spinFor(180, degrees);
+      LeftFront.startSpinFor(90, degrees);
+      LeftRear.startSpinFor(90, degrees);
+      RightFront.startSpinFor(90, degrees);
+      RightRear.spinFor(90, degrees);
 
       LeftFront.startSpinFor(180, degrees);
       LeftRear.startSpinFor(180, degrees);
