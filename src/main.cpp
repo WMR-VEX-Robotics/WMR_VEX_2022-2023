@@ -8,7 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
-#include <cmath>
+//#include <cmath>
 
 using namespace vex;
 
@@ -168,63 +168,74 @@ void autonomous(void) {
       break;
     case 1:
       // spins up roller on left
+      Vacuum.setPosition(0, degrees);
       LeftFront.setVelocity(100, percent);
       RightFront.setVelocity(100, percent);
       LeftRear.setVelocity(100, percent);
       RightRear.setVelocity(100, percent);
       Vacuum.setVelocity(100, percent);
 
+      LeftFront.setPosition(0, degrees);
+      RightFront.setPosition(0, degrees);
+      LeftRear.setPosition(0, degrees);
+      RightRear.setPosition(0, degrees);
+
       LeftFront.setMaxTorque(25, percent);
       RightFront.setMaxTorque(25, percent);
       LeftRear.setMaxTorque(25, percent);
       RightRear.setMaxTorque(25, percent);
+      Vacuum.setMaxTorque(100, percent);
 
 
-      LeftFront.startSpinFor(90, degrees);
-      LeftRear.startSpinFor(90, degrees);
-      RightFront.startSpinFor(90, degrees);
-      RightRear.spinFor(90, degrees);
+      LeftFront.spinToPosition(90, degrees, 200, rpm, false);
+      LeftRear.spinToPosition(90, degrees, 200, rpm, false);
+      RightFront.spinToPosition(90, degrees, 200, rpm, false);
+      RightRear.spinToPosition(90, degrees, 200, rpm, false);
+
       wait(.5, sec);
-      Vacuum.spinFor(-180, degrees);
+      
+      Vacuum.spinToPosition(-180, degrees, 200, rpm, true);
 
-    wait(.5, sec);
+      wait(1, sec);
 
       LeftFront.startSpinFor(-90, degrees);
       LeftRear.startSpinFor(-90, degrees);
       RightFront.startSpinFor(-90, degrees);
       RightRear.spinFor(-90, degrees);
 
-    wait(.5, sec);
+       wait(.25, sec);
 
       LeftFront.startSpinFor(160, degrees);
       LeftRear.startSpinFor(160, degrees);
       RightFront.startSpinFor(-160, degrees);
       RightRear.spinFor(-160, degrees);
 
-    wait(.5, sec);
+      wait(.5, sec);
 
       LeftFront.startSpinFor(-2000, degrees, 100, rpm);
       LeftRear.startSpinFor(-2000, degrees, 100, rpm);
       RightFront.startSpinFor(-2000, degrees, 100, rpm);
       RightRear.spinFor(-2000, degrees, 100, rpm);
     
-    wait(.5, sec);
+     wait(.5, sec);
 
       LeftFront.startSpinFor(-310, degrees);
       LeftRear.startSpinFor(-310, degrees);
       RightFront.startSpinFor(310, degrees);
       RightRear.spinFor(310, degrees);
      
-    wait(.5, sec);
+      //wait(.25, sec);
 
       // Flywheel1.startSpinFor(-1160, degrees, 100, rpm);
-      Flywheel1.spin(reverse, 9, volt);
-      Flywheel2.spin(forward, 9, volt);
+      Flywheel1.spin(reverse, 8.85, volt);
+      Flywheel2.spin(forward, 8.85, volt);
       // Flywheel2.spinFor(1160, degrees, 100, rpm);
 
-    wait(2, sec);
+      wait(2, sec);
       useLauncher();
-      wait(1, sec);
+      Flywheel1.spin(reverse, 8.5, volt);
+      Flywheel2.spin(forward, 8.5, volt);
+      wait(2, sec);
       useLauncher();
 
       break;
@@ -381,6 +392,11 @@ void drivercontrol(void) {
   LeftRear.setBrake(coast);
   RightFront.setBrake(coast);
   RightRear.setBrake(coast);
+
+  LeftFront.setMaxTorque(100, percent);
+  RightFront.setMaxTorque(100, percent);
+  LeftRear.setMaxTorque(100, percent);
+  RightRear.setMaxTorque(100, percent);
  
   while (1) {
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
@@ -408,7 +424,7 @@ void drivercontrol(void) {
       useReverseVacuum(100);
     }
     if(Controller1.ButtonY.pressing()){
-      Vacuum.spinFor(180, degrees);
+      Vacuum.spinFor(-180, degrees);
     }
     if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
         RobotLaunchVariable -= 1;
@@ -420,10 +436,10 @@ void drivercontrol(void) {
         Controller1.Screen.print(RobotLaunchVariable);
         wait(250, msec);
     }
-    if(Controller1.ButtonUp.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
+    if(Controller1.ButtonUp.pressing() && Brain.timer(sec) - startTime > 95){
       P1.open();
     }
-    if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
+    if(Controller1.ButtonDown.pressing() && Brain.timer(sec) - startTime > 95){
       P1.close();
     }
 
