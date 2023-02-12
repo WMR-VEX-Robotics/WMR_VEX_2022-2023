@@ -52,6 +52,35 @@ void StopAllChasis(void) {
   RightRear.stop(hold);
 }
 
+void moveForward(double amount) {
+  LeftFront.startSpinFor(amount, degrees);
+  LeftRear.startSpinFor(amount, degrees);
+  RightFront.startSpinFor(amount, degrees);
+  RightRear.spinFor(amount, degrees);
+}
+
+void moveBackwards(double amount) {
+  LeftFront.startSpinFor(-amount, degrees);
+  LeftRear.startSpinFor(-amount, degrees);
+  RightFront.startSpinFor(-amount, degrees);
+  RightRear.spinFor(-amount, degrees);
+}
+
+void turnLeft(double amount) {
+  LeftFront.startSpinFor(-amount, degrees);
+  LeftRear.startSpinFor(-amount, degrees);
+  RightFront.startSpinFor(amount, degrees);
+  RightRear.spinFor(amount, degrees);
+}
+
+void turnRight(double amount) {
+  LeftFront.startSpinFor(amount, degrees);
+  LeftRear.startSpinFor(amount, degrees);
+  RightFront.startSpinFor(-amount, degrees);
+  RightRear.spinFor(-amount, degrees);
+
+}
+
 // **************** VACUUM ********************
 
 void useForwardVacuum(int percent){
@@ -198,17 +227,11 @@ void autonomous(void) {
 
       wait(1, sec);
 
-      LeftFront.startSpinFor(-90, degrees);
-      LeftRear.startSpinFor(-90, degrees);
-      RightFront.startSpinFor(-90, degrees);
-      RightRear.spinFor(-90, degrees);
+      moveBackwards(90);
 
        wait(.25, sec);
 
-      LeftFront.startSpinFor(160, degrees);
-      LeftRear.startSpinFor(160, degrees);
-      RightFront.startSpinFor(-160, degrees);
-      RightRear.spinFor(-160, degrees);
+      turnRight(160);
 
       wait(.5, sec);
 
@@ -219,10 +242,7 @@ void autonomous(void) {
     
      wait(.5, sec);
 
-      LeftFront.startSpinFor(-310, degrees);
-      LeftRear.startSpinFor(-310, degrees);
-      RightFront.startSpinFor(310, degrees);
-      RightRear.spinFor(310, degrees);
+      turnLeft(310);
      
       //wait(.25, sec);
 
@@ -241,91 +261,12 @@ void autonomous(void) {
       break;
     case 2:
       // spin up right roller
-
-      LeftFront.startSpinFor(90, degrees);
-      LeftRear.startSpinFor(90, degrees);
-      RightFront.startSpinFor(90, degrees);
-      RightRear.spinFor(90, degrees);
-
-      LeftFront.startSpinFor(180, degrees);
-      LeftRear.startSpinFor(180, degrees);
-      RightFront.startSpinFor(-180, degrees);
-      RightRear.spinFor(-180, degrees);
-
-      LeftFront.startSpinFor(-180, degrees);
-      LeftRear.startSpinFor(-180, degrees);
-      RightFront.startSpinFor(-180, degrees);
-      RightRear.spinFor(-180, degrees);
-
-      LeftFront.startSpinFor(-180, degrees);
-      LeftRear.startSpinFor(-180, degrees);
-      RightFront.startSpinFor(180, degrees);
-      RightRear.spinFor(180, degrees);
-
-      LeftFront.startSpinFor(-180, degrees);
-      LeftRear.startSpinFor(-180, degrees);
-      RightFront.startSpinFor(-180, degrees);
-      RightRear.spinFor(-180, degrees);
-
-      Vacuum.startSpinFor(-180, degrees);
       break;
     case 3:
       // spin left roller then shoot
-
-      LeftFront.startSpinFor(180, degrees);
-      LeftRear.startSpinFor(180, degrees);
-      RightFront.startSpinFor(180, degrees);
-      RightRear.spinFor(180, degrees);
-      Vacuum.startSpinFor(-180, degrees);
-
-      LeftFront.startSpinFor(-180, degrees);
-      LeftRear.startSpinFor(-180, degrees);
-
-      Flywheel1.spin(forward);
-      Flywheel2.spin(forward);
-      wait(2, sec);
-      for(int i = 0; i < 3; i++){
-        useLauncher();
-        wait(.25, sec);
-      }
       break;
     case 4:
       // spin right roller then shoot
-
-      LeftFront.startSpinFor(180, degrees);
-      LeftRear.startSpinFor(180, degrees);
-      RightFront.startSpinFor(180, degrees);
-      RightRear.spinFor(180, degrees);
-
-      LeftFront.startSpinFor(180, degrees);
-      LeftRear.startSpinFor(180, degrees);
-      RightFront.startSpinFor(-180, degrees);
-      RightRear.spinFor(-180, degrees);
-
-      LeftFront.startSpinFor(-180, degrees);
-      LeftRear.startSpinFor(-180, degrees);
-      RightFront.startSpinFor(-180, degrees);
-      RightRear.spinFor(-180, degrees);
-
-      LeftFront.startSpinFor(-180, degrees);
-      LeftRear.startSpinFor(-180, degrees);
-      RightFront.startSpinFor(180, degrees);
-      RightRear.spinFor(180, degrees);
-
-      LeftFront.startSpinFor(-180, degrees);
-      LeftRear.startSpinFor(-180, degrees);
-      RightFront.startSpinFor(-180, degrees);
-      RightRear.spinFor(-180, degrees);
-
-      Vacuum.startSpinFor(-180, degrees);
-
-      Flywheel1.spin(forward);
-      Flywheel2.spin(forward);
-      wait(2, sec);
-      for(int i = 0; i < 3; i++){
-        useLauncher();
-        wait(.25, sec);
-      }
       break;
     case 5:
       // spin left roller, shoot, get more discs, shoot
@@ -335,25 +276,13 @@ void autonomous(void) {
       break;
     case 7:
       // spin left rollers, shoot preload, pick up, shoot, spick up, shoot, spin right rollers, pick up, shoot, spick up, shoot
-       LeftFront.startSpinFor(-90, degrees);
-      LeftRear.startSpinFor(-90, degrees);
-      RightFront.startSpinFor(-90, degrees);
-      RightRear.spinFor(-90, degrees);
+      moveBackwards(90);
 
-      LeftFront.startSpinFor(330, degrees);
-      LeftRear.startSpinFor(330, degrees);
-      RightFront.startSpinFor(-330, degrees);
-      RightRear.spinFor(-330, degrees);
+      turnRight(330);
 
-      LeftFront.startSpinFor(-775, degrees);
-      LeftRear.startSpinFor(-775, degrees);
-      RightFront.startSpinFor(-775, degrees);
-      RightRear.spinFor(-775, degrees);
+      moveBackwards(775);
 
-      LeftFront.startSpinFor(330, degrees);
-      LeftRear.startSpinFor(330, degrees);
-      RightFront.startSpinFor(-330, degrees);
-      RightRear.spinFor(-330, degrees);
+      turnRight(330);
 
       // LeftFront.setBrake(coast);
       // LeftRear.setBrake(coast);
@@ -365,10 +294,7 @@ void autonomous(void) {
       RightRear.setVelocity(50, percent);
       Vacuum.setVelocity(100, percent);
 
-      LeftFront.startSpinFor(270, degrees);
-      LeftRear.startSpinFor(270, degrees);
-      RightFront.startSpinFor(270, degrees);
-      RightRear.spinFor(270, degrees);
+      moveForward(270);
 
       Vacuum.spin(forward);
       LeftFront.setVelocity(25, percent);
@@ -376,10 +302,7 @@ void autonomous(void) {
       LeftRear.setVelocity(25, percent);
       RightRear.setVelocity(25, percent);
 wait(1, sec);
-      LeftFront.startSpinFor(360, degrees);
-      LeftRear.startSpinFor(360, degrees);
-      RightFront.startSpinFor(360, degrees);
-      RightRear.spinFor(360, degrees);
+      moveForward(360);
       break;
   }
 }
