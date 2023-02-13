@@ -43,7 +43,7 @@ int lengthAvg = 0;
 int startTime = 0;
 double Cx = 0;
 double Cy = 0;
-double distance = 0;
+double dist = 0;
 
 
 // ***************** DRIVE ********************
@@ -119,7 +119,8 @@ void useForwardFlywheel() {
 
 // ***************** Distance *******************
 double findDistance(double x, double y){
-  distance = (y - Cy) / (sin(atan((y - Cy)/(x - Cx))));
+  dist = (y - Cy) / (sin(atan((y - Cy)/(x - Cx))));
+  return dist;
 }
 
 
