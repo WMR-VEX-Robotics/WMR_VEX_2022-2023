@@ -8,7 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
-//#include <cmath>
+#include <cmath>
 
 using namespace vex;
 
@@ -41,6 +41,9 @@ int length = 0;
 int lengthSum = 0;
 int lengthAvg = 0;
 int startTime = 0;
+double Cx = 0;
+double Cy = 0;
+double distance = 0;
 
 
 // ***************** DRIVE ********************
@@ -112,6 +115,11 @@ void useForwardFlywheel() {
   Flywheel1.spin(reverse, RobotLaunchVariable, volt);
   Flywheel2.setStopping(coast);
   Flywheel2.spin(forward, RobotLaunchVariable, volt);
+}
+
+// ***************** Distance *******************
+double findDistance(double x, double y){
+  distance = ((x-Cx) * sqrt(pow(x, 2.0) - ))
 }
 
 
