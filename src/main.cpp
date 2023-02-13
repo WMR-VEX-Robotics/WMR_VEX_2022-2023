@@ -119,7 +119,7 @@ void useForwardFlywheel() {
 
 // ***************** Distance *******************
 double findDistance(double x, double y){
-  distance = ((x-Cx) * sqrt(pow(x, 2.0) - ((2 * x) * x) + pow(Cx, 2.0) + pow(y, 2.0) - ((2 * Cy) * y) + pow(Cy, 2.0))) / abs(x - Cx);
+  distance = (y - Cy) / (sin(atan((y - Cy)/(x - Cx))));
 }
 
 
