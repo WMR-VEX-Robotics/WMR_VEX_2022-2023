@@ -13,6 +13,7 @@ extern motor Flywheel2;
 extern motor Launch;
 extern pneumatics P1;
 extern brain Brain;
+extern encoder EncoderA;
 
 
 /**

@@ -29,6 +29,7 @@ motor Launch = motor(PORT3, ratio6_1, true);
 motor Flywheel1 = motor(PORT4, ratio6_1, true);
 motor Flywheel2 = motor(PORT5, ratio6_1, false);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
+encoder EncoderA = encoder(Brain.ThreeWirePort.A);
 
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
@@ -329,8 +330,9 @@ void drivercontrol(void) {
   RightFront.setMaxTorque(100, percent);
   LeftRear.setMaxTorque(100, percent);
   RightRear.setMaxTorque(100, percent);
- 
+     
   while (1) {
+    
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
     LeftFront.spin(forward, Controller1.Axis3.position() + Controller1.Axis1.position(), percent);
     RightFront.spin(forward, Controller1.Axis3.position() - Controller1.Axis1.position(), percent);
@@ -346,6 +348,25 @@ void drivercontrol(void) {
     if (Controller1.ButtonR2.pressing()) {
       useLauncher();
     }
+
+    if (Controller1.ButtonR1.pressing() || Controller1.ButtonL1.pressing()) {
+      if (Controller1.ButtonR1.pressing()) {
+        Vacuum.spin(forward, 100, pct);
+      } else {
+        Vacuum.spin(reverse, 100, pct);
+      }
+    } else {
+      Vacuum.spin(forward, 0, pct);
+    }
+    /*
+    }
+    if (Controller1.ButtonR1.pressing()) {
+      Vacuum.spin(reverse, 100, pct);
+    } else if (!Controller1.ButtonR1.pressing() && !Controller1.ButtonL1.pressing()) {
+      Vacuum.spin(forward, 0, pct);
+    }
+    */
+    
     if(Controller1.ButtonA.pressing()){
       useForwardVacuum(100);
     }
@@ -358,6 +379,7 @@ void drivercontrol(void) {
     if(Controller1.ButtonY.pressing()){
       Vacuum.spinFor(-180, degrees);
     }
+    
     if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
         RobotLaunchVariable -= 1;
         Controller1.Screen.print(RobotLaunchVariable);
@@ -371,8 +393,11 @@ void drivercontrol(void) {
     if(Controller1.ButtonUp.pressing() && Brain.timer(sec) - startTime > 95){
       P1.open();
     }
-    if(Controller1.ButtonDown.pressing() && Brain.timer(sec) - startTime > 95){
-      P1.close();
+    if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
+      //P1.close();
+      Brain.Screen.clearScreen();
+    Brain.Screen.print(EncoderA.position(degrees));
+    wait(.5, sec);
     }
 
   }
