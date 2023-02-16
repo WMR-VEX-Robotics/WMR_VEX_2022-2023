@@ -334,10 +334,10 @@ void drivercontrol(void) {
   while (1) {
     
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
-    LeftFront.spin(forward, Controller1.Axis3.position() + Controller1.Axis1.position(), percent);
-    RightFront.spin(forward, Controller1.Axis3.position() - Controller1.Axis1.position(), percent);
-    LeftRear.spin(forward, Controller1.Axis3.position() + Controller1.Axis1.position(), percent);
-    RightRear.spin(forward, Controller1.Axis3.position() - Controller1.Axis1.position(), percent);
+    LeftFront.spin(forward, (Controller1.Axis3.position() + Controller1.Axis1.position()) / 7.8740157480314, volt);
+    RightFront.spin(forward, (Controller1.Axis3.position() - Controller1.Axis1.position()) / 7.8740157480314, volt);
+    LeftRear.spin(forward, (Controller1.Axis3.position() + Controller1.Axis1.position()) / 7.8740157480314, volt);
+    RightRear.spin(forward, (Controller1.Axis3.position() - Controller1.Axis1.position()) / 7.8740157480314, volt);
     if(Controller1.ButtonL2.pressing()) {
       useForwardFlywheel();
     } 
