@@ -49,9 +49,12 @@ double Cy = 0;
 double dist = 0;
 
 //odometry variable
-double L_dist_to_center = 0;
-double R_dist_to_center = 0;
-double C_dist_to_center = 0;
+double L_dist_to_center = 4.25;
+double R_dist_to_center = 4.25;
+double C_dist_to_center = 9.5;
+double initial_L = EncoderB.position(degrees);
+double initial_R = EncoderC.position(degrees);
+double initial_C = EncoderA.position(degrees);
 double Delta_L = 0;
 double Delta_R = 0;
 double Delta_C = 0;
@@ -138,16 +141,16 @@ double findDistance(double x, double y){
 
 void updateOdometry()
 {
-  Delta_L = EncoderB.position(degrees)*M_PI/180*2.79;
-  Delta_R = EncoderC.position(degrees)*M_PI/180*2.79;
-  Delta_C = EncoderA.position(degrees)*M_PI/180*2.79;
+  Delta_L = ((EncoderB.position(degrees)-initial_L)*M_PI/180)*(2.79/2);
+  Delta_R = -1*(((EncoderC.position(degrees)-initial_R)*M_PI/180)*(2.79/2));
+  Delta_C = ((EncoderA.position(degrees)-initial_C)*M_PI/180)*(2.79/2);
 }
 
 double findOrientation()
 {
   updateOdometry();
   double temp_orientation;
-  temp_orientation = (Delta_L-Delta_R)/(L_dist_to_center+R_dist_to_center);
+  temp_orientation = (Delta_L - Delta_R) / (L_dist_to_center + R_dist_to_center);
   return temp_orientation;
 }
 
@@ -155,7 +158,7 @@ double find_Position_X()
 {
   updateOdometry();
   double temp_position_x;
-  temp_position_x = 2*sin(findOrientation())*((Delta_C/findOrientation())+C_dist_to_center);
+  temp_position_x = 2 * sin(findOrientation()/2) * ((Delta_C / findOrientation()) + C_dist_to_center);
   return temp_position_x;
 }
 
@@ -163,7 +166,7 @@ double find_Position_Y()
 {
   updateOdometry();
   double temp_position_y;
-  temp_position_y = 2*sin(findOrientation())*((Delta_R/findOrientation())+R_dist_to_center);
+  temp_position_y = 2 * sin(findOrientation()/2) * ((Delta_R / findOrientation()) + R_dist_to_center);
   return temp_position_y;
 }
 
@@ -175,6 +178,10 @@ void odometrize()
   Brain.Screen.printAt(25, 75, "x: %f", robot_odometry[0]);
   Brain.Screen.printAt(25, 125, "y: %f", robot_odometry[1]);
   Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry[2]*180/M_PI);
+  //updateOdometry();
+  // Brain.Screen.printAt(25, 75, "delta_l: %f", Delta_L);
+  // Brain.Screen.printAt(25, 125, "delta_r: %f", Delta_R);
+  // Brain.Screen.printAt(25, 175, "delta_c %f", Delta_C);
 }
 
 // ***************** end of obamatree *******************
@@ -383,8 +390,10 @@ void drivercontrol(void) {
   RightFront.setMaxTorque(100, percent);
   LeftRear.setMaxTorque(100, percent);
   RightRear.setMaxTorque(100, percent);
+  Brain.Screen.clearScreen();
      
   while (1) {
+    odometrize();
     
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
     LeftFront.spin(forward, (Controller1.Axis3.position() + Controller1.Axis1.position()) / 7.8740157480314, volt);
