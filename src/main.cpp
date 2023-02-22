@@ -28,8 +28,10 @@ motor Vacuum = motor(PORT20, ratio18_1, true);
 motor Launch = motor(PORT3, ratio6_1, true);
 motor Flywheel1 = motor(PORT4, ratio6_1, true);
 motor Flywheel2 = motor(PORT5, ratio6_1, false);
-pneumatics P1 = pneumatics(Brain.ThreeWirePort.F);
+pneumatics P1 = pneumatics(Brain.ThreeWirePort.G);
 encoder EncoderA = encoder(Brain.ThreeWirePort.A);
+encoder EncoderB = encoder(Brain.ThreeWirePort.C);
+encoder EncoderC = encoder(Brain.ThreeWirePort.E);
 
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
@@ -46,6 +48,14 @@ double Cx = 0;
 double Cy = 0;
 double dist = 0;
 
+//odometry variable
+double L_dist_to_center = 0;
+double R_dist_to_center = 0;
+double C_dist_to_center = 0;
+double Delta_L = 0;
+double Delta_R = 0;
+double Delta_C = 0;
+double robot_odometry[3] = {0, 0, 0};
 
 // ***************** DRIVE ********************
 
@@ -124,7 +134,50 @@ double findDistance(double x, double y){
   return dist;
 }
 
+// ***************** obamatree *******************
 
+void updateOdometry()
+{
+  Delta_L = EncoderB.position(degrees)*M_PI/180*2.79;
+  Delta_R = EncoderC.position(degrees)*M_PI/180*2.79;
+  Delta_C = EncoderA.position(degrees)*M_PI/180*2.79;
+}
+
+double findOrientation()
+{
+  updateOdometry();
+  double temp_orientation;
+  temp_orientation = (Delta_L-Delta_R)/(L_dist_to_center+R_dist_to_center);
+  return temp_orientation;
+}
+
+double find_Position_X()
+{
+  updateOdometry();
+  double temp_position_x;
+  temp_position_x = 2*sin(findOrientation())*((Delta_C/findOrientation())+C_dist_to_center);
+  return temp_position_x;
+}
+
+double find_Position_Y()
+{
+  updateOdometry();
+  double temp_position_y;
+  temp_position_y = 2*sin(findOrientation())*((Delta_R/findOrientation())+R_dist_to_center);
+  return temp_position_y;
+}
+
+void odometrize()
+{
+  robot_odometry[0]=find_Position_X();
+  robot_odometry[1]=find_Position_Y();
+  robot_odometry[2]=findOrientation();
+  Brain.Screen.printAt(25, 75, "x: %f", robot_odometry[0]);
+  Brain.Screen.printAt(25, 125, "y: %f", robot_odometry[1]);
+  Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry[2]*180/M_PI);
+}
+
+// ***************** end of obamatree *******************
 
 void drawGUI() {
   // Draws 2 buttons to be used for selecting auto
@@ -250,7 +303,7 @@ void autonomous(void) {
       RightFront.startSpinFor(-2000, degrees, 100, rpm);
       RightRear.spinFor(-2000, degrees, 100, rpm);
     
-     wait(.5, sec);
+      wait(.5, sec);
 
       turnLeft(310);
      
@@ -311,7 +364,7 @@ void autonomous(void) {
       RightFront.setVelocity(25, percent);
       LeftRear.setVelocity(25, percent);
       RightRear.setVelocity(25, percent);
-wait(1, sec);
+      wait(1, sec);
       moveForward(360);
       break;
   }
