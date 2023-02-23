@@ -47,6 +47,9 @@ int startTime = 0;
 double Cx = 0;
 double Cy = 0;
 double dist = 0;
+int intake = 2;
+bool spinvacmore = false;
+
 
 //odometry variable
 double L_dist_to_center = 4.25;
@@ -141,9 +144,9 @@ double findDistance(double x, double y){
 
 void updateOdometry()
 {
-  Delta_L = ((EncoderB.position(degrees)-initial_L)*M_PI/180)*(2.79/2);
-  Delta_R = -1*(((EncoderC.position(degrees)-initial_R)*M_PI/180)*(2.79/2));
-  Delta_C = ((EncoderA.position(degrees)-initial_C)*M_PI/180)*(2.79/2);
+  Delta_L = ((EncoderB.position(degrees))*M_PI/180)*(2.79/2);
+  Delta_R = (((EncoderC.position(degrees))*M_PI/180)*(2.79/2));
+  Delta_C = ((EncoderA.position(degrees))*M_PI/180)*(2.79/2);
 }
 
 double findOrientation()
@@ -175,13 +178,17 @@ void odometrize()
   robot_odometry[0]=find_Position_X();
   robot_odometry[1]=find_Position_Y();
   robot_odometry[2]=findOrientation();
-  Brain.Screen.printAt(25, 75, "x: %f", robot_odometry[0]);
-  Brain.Screen.printAt(25, 125, "y: %f", robot_odometry[1]);
-  Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry[2]*180/M_PI);
-  //updateOdometry();
-  // Brain.Screen.printAt(25, 75, "delta_l: %f", Delta_L);
-  // Brain.Screen.printAt(25, 125, "delta_r: %f", Delta_R);
-  // Brain.Screen.printAt(25, 175, "delta_c %f", Delta_C);
+  //Brain.Screen.printAt(25, 75, "x: %f", robot_odometry[0]);
+  //Brain.Screen.printAt(25, 125, "y: %f", robot_odometry[1]);
+  //Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry[2]*180/M_PI);
+  updateOdometry();
+  Brain.Screen.printAt(25, 50, "delta_l: %f", Delta_L);
+  Brain.Screen.printAt(25, 75, "delta_r: %f", Delta_R);
+  Brain.Screen.printAt(25, 125, "delta_c %f", Delta_C);
+  Brain.Screen.printAt(25, 150, "angle %f", findOrientation()*180/M_PI);
+  Brain.Screen.printAt(25, 175, "delta_diff %f", (Delta_L - Delta_R));
+  Brain.Screen.printAt(25, 200, "sum of distances %f", (L_dist_to_center + R_dist_to_center));
+  Brain.Screen.printAt(25, 200, "delta diff/sum of distances %f", (Delta_L - Delta_R)/(L_dist_to_center + R_dist_to_center));
 }
 
 // ***************** end of obamatree *******************
@@ -411,15 +418,44 @@ void drivercontrol(void) {
       useLauncher();
     }
 
-    if (Controller1.ButtonR1.pressing() || Controller1.ButtonL1.pressing()) {
+    // int toggle;
+    // if(Controller1.ButtonR1.pressing()) {
+    //   toggle = 0;
+    //   dir = 1;
+    // }
+    // if(Controller1.ButtonL1.pressing()) {
+    //   toggle = 0;
+    //   dir = 2;
+    // }
+    // if(Controller1.ButtonA.pressing()) {
+    //   toggle = 1;
+    //   dir = 1;
+    // }
+    // if(Controller1.ButtonX.pressing()) {
+    //   toggle = 1
+    //   dir = 2;
+    // }
+    // if(Controller1.ButtonB.pressing()) {
+    //   dir = 0;
+    // }
+
+
+   if(Controller1.ButtonR1.pressing()||Controller1.ButtonL1.pressing()){
       if (Controller1.ButtonR1.pressing()) {
-        Vacuum.spin(forward, 100, pct);
-      } else {
-        Vacuum.spin(reverse, 100, pct);
+        intake = 1;
+        spinvacmore = false;
+      } 
+      else if (Controller1.ButtonL1.pressing()) {
+        intake = 3;
+        spinvacmore = false;
       }
-    } else {
-      Vacuum.spin(forward, 0, pct);
+      
     }
+    else if (spinvacmore == false){
+      intake = 2;
+      spinvacmore = true;
+   }
+   
     /*
     }
     if (Controller1.ButtonR1.pressing()) {
@@ -430,18 +466,31 @@ void drivercontrol(void) {
     */
     
     if(Controller1.ButtonA.pressing()){
-      useForwardVacuum(100);
+      intake = 1;
+      spinvacmore = true;
     }
     if(Controller1.ButtonB.pressing()){
-      useForwardVacuum(0);
+      intake = 2;
+      spinvacmore = false;
     }
     if(Controller1.ButtonX.pressing()){
-      useReverseVacuum(100);
+      intake = 3;
+      spinvacmore = true;
     }
     if(Controller1.ButtonY.pressing()){
       Vacuum.spinFor(-180, degrees);
     }
-    
+
+    if(intake == 1){
+      useForwardVacuum(100);
+    }
+    if(intake == 2){
+      useForwardVacuum(0);
+    }
+    if(intake == 3){
+      useReverseVacuum(100);
+    }
+
     if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
         RobotLaunchVariable -= 1;
         Controller1.Screen.print(RobotLaunchVariable);
