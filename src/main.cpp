@@ -52,8 +52,8 @@ bool spinvacmore = false;
 
 
 //odometry variable
-double L_dist_to_center = 4.25;
-double R_dist_to_center = 4.25;
+double L_dist_to_center = 3.89;
+double R_dist_to_center = 3.89;
 double C_dist_to_center = 9.5;
 double initial_L = EncoderB.position(degrees);
 double initial_R = EncoderC.position(degrees);
@@ -126,6 +126,25 @@ void useLauncher() {
 // *************** FLYWHEEL *******************
 
 void useForwardFlywheel() {
+  Flywheel1.setStopping(coast);
+  Flywheel2.setStopping(coast);
+  if (Flywheel2.velocity(rpm) < 325) {
+    Flywheel1.spin(reverse, 15, volt);
+    Flywheel2.spin(forward, 15, volt);
+  } else {
+    Flywheel1.spin(reverse, 7.5, volt);
+    Flywheel2.spin(forward, 7.5, volt);
+  }
+}
+
+void useReverseFlywheel() {
+  Flywheel1.setStopping(coast);
+  Flywheel2.setStopping(coast);
+  Flywheel1.spin(forward, 15, volt);
+  Flywheel2.spin(reverse, 15, volt);
+}
+
+void useForwardFlywheelVariable() {
   Flywheel1.setVelocity(300, rpm);
   Flywheel2.setVelocity(300, rpm);
   Flywheel1.setStopping(coast);
@@ -145,7 +164,7 @@ double findDistance(double x, double y){
 void updateOdometry()
 {
   Delta_L = ((EncoderB.position(degrees))*M_PI/180)*(2.79/2);
-  Delta_R = (((EncoderC.position(degrees))*M_PI/180)*(2.79/2));
+  Delta_R = ((EncoderC.position(degrees))*M_PI/180)*(2.79/2);
   Delta_C = ((EncoderA.position(degrees))*M_PI/180)*(2.79/2);
 }
 
@@ -184,10 +203,10 @@ void odometrize()
   updateOdometry();
   Brain.Screen.printAt(25, 50, "delta_l: %f", Delta_L);
   Brain.Screen.printAt(25, 75, "delta_r: %f", Delta_R);
-  Brain.Screen.printAt(25, 125, "delta_c %f", Delta_C);
-  Brain.Screen.printAt(25, 150, "angle %f", findOrientation()*180/M_PI);
-  Brain.Screen.printAt(25, 175, "delta_diff %f", (Delta_L - Delta_R));
-  Brain.Screen.printAt(25, 200, "sum of distances %f", (L_dist_to_center + R_dist_to_center));
+  Brain.Screen.printAt(25, 100, "delta_c %f", Delta_C);
+  Brain.Screen.printAt(25, 125, "angle %f", findOrientation()*180/M_PI);
+  Brain.Screen.printAt(25, 150, "delta_diff %f", (Delta_L - Delta_R));
+  Brain.Screen.printAt(25, 175, "sum of distances %f", (L_dist_to_center + R_dist_to_center));
   Brain.Screen.printAt(25, 200, "delta diff/sum of distances %f", (Delta_L - Delta_R)/(L_dist_to_center + R_dist_to_center));
 }
 
@@ -505,8 +524,7 @@ void drivercontrol(void) {
       P1.open();
     }
     if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
-      //P1.close();
-      Brain.Screen.clearScreen();
+      useReverseFlywheel();
     Brain.Screen.print(EncoderA.position(degrees));
     wait(.5, sec);
     }
