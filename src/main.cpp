@@ -9,6 +9,7 @@
 
 #include "vex.h"
 #include <cmath>
+#include <algorithm>
 
 using namespace vex;
 
@@ -53,16 +54,20 @@ bool spinvacmore = false;
 
 //odometry variable
 double OdomWheelDiam = 2.79;
-double L_dist_to_center = 4.2;
-double R_dist_to_center = 3.7;
-double C_dist_to_center = 6;
-double initial_L = EncoderB.position(degrees);
-double initial_R = EncoderC.position(degrees);
-double initial_C = EncoderA.position(degrees);
+double L_dist_to_center = 4.13;
+double R_dist_to_center = 3.85;
+double C_dist_to_center = 6.5;
 double Delta_L = 0;
 double Delta_R = 0;
 double Delta_C = 0;
-double robot_odometry[3] = {0, 0, 0};
+double Delta_theta = 0;
+double delta_fwd = 0;
+double delta_strafe = 0;
+double robot_odometry_initialvalues[3] = {0, 0, 0};
+double robot_odometry_coordinates[3] = {0, 0, 0};
+double encoder_positions_old[3] = {0,0,0};
+double encoder_positions_new[3] = {0,0,0};
+int obamatreecounter = 0;
 
 // ***************** DRIVE ********************
 
@@ -162,80 +167,90 @@ double findDistance(double x, double y){
 
 // ***************** obamatree *******************
 
-void updateOdometry()
-{
-  Delta_L = ((EncoderB.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
-  Delta_R = ((EncoderC.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
-  Delta_C = ((EncoderA.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
-}
 
-double findOrientation()
+double RectifyAngle(double Angle)
 {
-  updateOdometry();
-  double temp_orientation;
-  temp_orientation = (Delta_L - Delta_R) / (L_dist_to_center + R_dist_to_center);
-  return temp_orientation;
-}
-
-double find_Position_X()
-{
-  updateOdometry();
-  double temp_position_x;
-  temp_position_x = 2 * sin(findOrientation()/2) * ((Delta_C / findOrientation()) + C_dist_to_center);
-  return temp_position_x;
-}
-
-double find_Position_Y()
-{
-  updateOdometry();
-  double temp_position_y;
-  temp_position_y = 2 * sin(findOrientation()/2) * ((Delta_R / findOrientation()) + R_dist_to_center);
-  return temp_position_y;
-}
-
-double RectifyAngle(double OriginalAngle)
-{
-  double NewModAngle = fmod((robot_odometry[2]*180/M_PI),360);
-  if(NewModAngle < 0)
+  double normalizedAngle = fmod(Angle,360);
+  if(normalizedAngle<0)
   {
-    return NewModAngle+360;
+    return normalizedAngle+360;
   }
   else
   {
-    return NewModAngle;
+    return normalizedAngle;
   }
+
 }
 
-void odometrize()
+void obamatree()
 {
-  robot_odometry[0]=find_Position_X();
-  robot_odometry[1]=find_Position_Y();
-  robot_odometry[2]=findOrientation();
-  Brain.Screen.printAt(25, 75, "x: %f", robot_odometry[0]);
-  Brain.Screen.printAt(25, 125, "y: %f", robot_odometry[1]);
-  Brain.Screen.printAt(25, 175, "Theta: %f", RectifyAngle(robot_odometry[2]*180/M_PI));
+  encoder_positions_new[0] = ((EncoderB.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
+  encoder_positions_new[1] = ((EncoderC.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
+  encoder_positions_new[2] = ((EncoderA.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
+
+  Delta_L = encoder_positions_new[0] - encoder_positions_old[0];
+  Delta_R = encoder_positions_new[1] - encoder_positions_old[1];
+  Delta_C = encoder_positions_new[2] - encoder_positions_old[2];
+  
+  delta_strafe = Delta_C - (C_dist_to_center*Delta_theta);
+
+  delta_fwd = (Delta_L + Delta_R)/2;
+
+  encoder_positions_old[0] = encoder_positions_new[0];
+  encoder_positions_old[1] = encoder_positions_new[1];
+  encoder_positions_old[2] = encoder_positions_new[2];
+
+  double ThetaOne = (Delta_L - Delta_R) / (L_dist_to_center + R_dist_to_center) + robot_odometry_coordinates[2];
+  
+  Delta_theta = ThetaOne - robot_odometry_coordinates[2];
+  
+  robot_odometry_coordinates[2] = robot_odometry_coordinates[2] + Delta_theta;
+
+  robot_odometry_coordinates[0] += (delta_fwd*cos(robot_odometry_coordinates[2]) - delta_strafe * sin(robot_odometry_coordinates[2]));
+  robot_odometry_coordinates[1] += (delta_fwd*sin(robot_odometry_coordinates[2]) + delta_strafe * cos(robot_odometry_coordinates[2]));
+
+  Brain.Screen.printAt(25, 125, "x: %f", robot_odometry_coordinates[0]);
+  Brain.Screen.printAt(25, 150, "y: %f", robot_odometry_coordinates[1]);
+  Brain.Screen.printAt(25, 175, "Theta: %f", RectifyAngle((-robot_odometry_coordinates[2]*180/M_PI)));
+  //Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry_coordinates[2]);
+}
+
+double distanceBetweenTwoAngles (double angle1, double angle2)
+{
+  double dist1 = angle1-angle2;
+  double dist2 = angle2-angle1;
+  dist1 = std::max(dist1,dist2);
+  return std::min(dist1,360-dist1);
 }
 
 void OdomSpinTo(double Target_theta)
 {
-  updateOdometry();
-  odometrize();
-  double actualtheta = RectifyAngle(robot_odometry[2]*180/M_PI);
-  double ToGo = fmod(actualtheta+360-Target_theta,180);
-  while(ToGo>5)
+  obamatree();
+  double actualtheta = RectifyAngle((-robot_odometry_coordinates[2]*180/M_PI));
+  double startingtheta = actualtheta;
+  double ToGo = distanceBetweenTwoAngles(startingtheta, Target_theta);
+  double ToGoFull = ToGo;
+  //Brain.Screen.printAt(25, 75, "togofull: %f", ToGoFull);
+  while(fabs(actualtheta-Target_theta)>0.3)
   {
-    actualtheta = RectifyAngle(robot_odometry[2]*180/M_PI);
-    updateOdometry();
-    odometrize();
-    LeftFront.setVelocity(50 * fmod(actualtheta+360-Target_theta,180)/ToGo, percent);
-    RightFront.setVelocity(50 * fmod(actualtheta+360-Target_theta,180)/ToGo, percent);
-    LeftRear.setVelocity(50 * fmod(actualtheta+360-Target_theta,180)/ToGo, percent);
-    RightRear.setVelocity(50 * fmod(actualtheta+360-Target_theta,180)/ToGo, percent);
+    obamatree();
+    actualtheta = RectifyAngle((-robot_odometry_coordinates[2]*180/M_PI));
+    ToGo = distanceBetweenTwoAngles(actualtheta, Target_theta);
 
+    //Brain.Screen.printAt(25, 200, "athets: %f", robot_odometry_coordinates[2]);
+
+    LeftFront.setVelocity(((100*(ToGo/ToGoFull)+6)*ToGoFull/360)+5, percent);
+    RightFront.setVelocity(((100*(ToGo/ToGoFull)+6)*ToGoFull/360)+5, percent);
+    LeftRear.setVelocity(((100*(ToGo/ToGoFull)+6)*ToGoFull/360)+5, percent);
+    RightRear.setVelocity(((100*(ToGo/ToGoFull)+6)*ToGoFull/360)+5, percent);
+    //Brain.Screen.printAt(25, 100, "togo/togofull: %f", ToGo/ToGoFull);
+    
     if(Target_theta > 180)
     {
-      if(Target_theta - 180 < actualtheta < Target_theta)
+      if((Target_theta - 180) < startingtheta && startingtheta < Target_theta)
       {
+        //Brain.Screen.printAt(25, 50, "path 1");
+
         LeftFront.spin(reverse);
         LeftRear.spin(reverse);
         RightFront.spin(forward);
@@ -243,6 +258,7 @@ void OdomSpinTo(double Target_theta)
       }
       else
       {
+        //Brain.Screen.printAt(25, 50, "path 2");
         LeftFront.spin(forward);
         LeftRear.spin(forward);
         RightFront.spin(reverse);
@@ -251,15 +267,21 @@ void OdomSpinTo(double Target_theta)
     }
     else
     {
-      if(Target_theta < actualtheta < Target_theta + 180)
+      if(Target_theta < startingtheta && startingtheta < (Target_theta + 180))
       {
+        //Brain.Screen.printAt(25, 50, "path 3");
         LeftFront.spin(forward);
         LeftRear.spin(forward);
         RightFront.spin(reverse);
         RightRear.spin(reverse);
+
+        //Brain.Screen.printAt(25, 25, "target theta: %f", Target_theta);
+        //Brain.Screen.printAt(25, 50, "strating theta: %f", startingtheta);
+        //Brain.Screen.printAt(725, 75, "target theta+180: %f", Target_theta+180);
       }
       else
       {
+        //Brain.Screen.printAt(25, 50, "path 4");
         LeftFront.spin(reverse);
         LeftRear.spin(reverse);
         RightFront.spin(forward);
@@ -267,32 +289,83 @@ void OdomSpinTo(double Target_theta)
       }
     }
   }
+  LeftFront.stop(hold);
+  LeftRear.stop(hold);
+  RightFront.stop(hold);
+  RightRear.stop(hold);
 }
 
-void OdomMoveTo (double Target_x, double Target_y, double Target_angle)
+void OdomMoveTo (double Target_x, double Target_y)
 {
-  updateOdometry();
-  double diff_x = Target_x - find_Position_X();
-  double diff_y = Target_y = find_Position_Y();
-  OdomSpinTo(atan(diff_y/diff_x)); 
+  obamatree();
+  double diff_x = Target_x+robot_odometry_coordinates[0];
+  double diff_y = Target_y-robot_odometry_coordinates[1];
+  double pythTheta = atan(diff_y/diff_x);
+  //Brain.Screen.printAt(25, 50, "pyththeta: %f", RectifyAngle(pythTheta*180/M_PI));
+  OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
+  OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
+  obamatree();
+  diff_x = Target_x+robot_odometry_coordinates[0];
+  diff_y = Target_y-robot_odometry_coordinates[1];
+  pythTheta = atan(diff_y/diff_x);
+  Brain.Screen.printAt(25, 50, "dx: %f", diff_x);
+  Brain.Screen.printAt(25, 75, "dy %f", diff_y);
+  Brain.Screen.printAt(25, 100, "pyththeta %f", pythTheta);
+  wait(0.5, sec);
+  OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
+  OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
+  obamatree();
+  diff_x = Target_x+robot_odometry_coordinates[0];
+  diff_y = Target_y-robot_odometry_coordinates[1];
+  pythTheta = atan(diff_y/diff_x);
+  Brain.Screen.printAt(25, 50, "dx: %f", diff_x);
+  Brain.Screen.printAt(25, 75, "dy %f", diff_y);
+  Brain.Screen.printAt(25, 100, "pyththeta %f", pythTheta);
+  wait(0.5, sec);
+  OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
+  OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
+  Brain.Screen.printAt(25, 50, "dx: %f", diff_x);
+  Brain.Screen.printAt(25, 75, "dy %f", diff_y);
+  Brain.Screen.printAt(25, 100, "pyththeta %f", pythTheta);
+  obamatree();
+  wait(0.5, sec);
 
-  LeftFront.setVelocity(50, percent);
-  RightFront.setVelocity(50, percent);
-  LeftRear.setVelocity(50, percent);
-  RightRear.setVelocity(50, percent);
+  //wait(0.5,sec);
 
-  while(diff_x+diff_y > 3)
-  {
-    diff_x = Target_x - find_Position_X();
-    diff_y = Target_y = find_Position_Y();
+  while (fabs(diff_x)>0.2) {
+    obamatree();
+    diff_x = Target_x + robot_odometry_coordinates[0];
+    diff_y = Target_y - robot_odometry_coordinates[1];
+
+    /*LeftFront.setVelocity(30, percent);
+    RightFront.setVelocity(30, percent);
+    LeftRear.setVelocity(30, percent);
+    RightRear.setVelocity(30, percent);
+
+    Brain.Screen.printAt(25, 50, "dx: %f", diff_x);
+    Brain.Screen.printAt(25, 75, "dy %f", diff_y);
     LeftFront.spin(forward);
     LeftRear.spin(forward);
     RightFront.spin(forward);
-    RightRear.spin(forward);
-  }
+    RightRear.spin(forward);*/
+    LeftFront.spin(forward, 7.8740157480314, volt);
+    RightFront.spin(forward, 7.8740157480314, volt);
+    LeftRear.spin(forward,  7.8740157480314, volt);
+    RightRear.spin(forward,  7.8740157480314, volt);
 
-  OdomSpinTo(Target_angle);
+  }
+    LeftFront.stop(hold);
+    RightFront.stop(hold);
+    LeftRear.stop(hold);
+    RightRear.stop(hold);
+    obamatree();
+  //LeftFront.stop(hold);
+  //LeftRear.stop(hold);
+  //RightFront.stop(hold);
+  //RightRear.stop(hold);
+  //OdomSpinTo(Target_theta);
 }
+
 
 // ***************** end of obamatree *******************
 
@@ -365,7 +438,7 @@ void selectAuton() {
 void pre_auton(void) {
   // P1.open();
   Brain.Screen.printAt(1, 40, "pre auton is running");
-  drawGUI();
+  //drawGUI();
   Brain.Screen.pressed(selectAuton);
 }
 
@@ -440,7 +513,6 @@ void autonomous(void) {
 
       break;
     case 2:
-      OdomSpinTo(45);
       break;
     case 3:
       // spin left roller then shoot
@@ -491,19 +563,24 @@ void autonomous(void) {
 
 void drivercontrol(void) {
   // startTime = Brain.timer(sec);
-  LeftFront.setBrake(coast);
-  LeftRear.setBrake(coast);
-  RightFront.setBrake(coast);
-  RightRear.setBrake(coast);
+  LeftFront.setBrake(brake);
+  LeftRear.setBrake(brake);
+  RightFront.setBrake(brake);
+  RightRear.setBrake(brake);
 
   LeftFront.setMaxTorque(100, percent);
   RightFront.setMaxTorque(100, percent);
   LeftRear.setMaxTorque(100, percent);
   RightRear.setMaxTorque(100, percent);
   Brain.Screen.clearScreen();
+
+  //robot_odometry_coordinates[0] = 0;
+  //robot_odometry_coordinates[1] = 0;
+  //robot_odometry_coordinates[2] = 0;
      
   while (1) {
-    odometrize();
+    obamatree();
+    
     
     if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
     LeftFront.spin(forward, (Controller1.Axis3.position() + Controller1.Axis1.position()) / 7.8740157480314, volt);
@@ -622,6 +699,41 @@ void drivercontrol(void) {
 //******************** MAIN *******************
 
 int main() {
+  EncoderA.resetRotation();
+  EncoderB.resetRotation();
+  EncoderC.resetRotation();
+  wait(0.3, sec);
+  obamatree();
+
+  //OdomSpinTo(45);
+  OdomMoveTo(10,10);
+
+  wait(1, sec);
+
+  obamatree();
+
+  OdomMoveTo(20,-10);
+
+  //wait(5, sec);
+
+  //obamatree();
+
+  //OdomMoveTo(35,15);
+
+  //wait(5,sec);
+
+  obamatree();
+
+  //OdomSpinTo(120);
+  //wait(0.5, sec);
+  //obamatree();
+  //OdomSpinTo(240);
+  //wait(0.5, sec);
+  //obamatree();
+  //OdomSpinTo(0);
+  //wait(0.5, sec);
+  //obamatree();
+
   Competition.autonomous(autonomous);
   Competition.drivercontrol(drivercontrol);
   pre_auton();
