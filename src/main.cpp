@@ -38,7 +38,7 @@ encoder EncoderC = encoder(Brain.ThreeWirePort.E);
 bool RemoteControlCodeEnabled = true;
 bool release = false;
 double RobotLaunchVariable = 7.5;
-int auton = 1;
+int auton = 4;
 int AutonMin = 0;
 int AutonMax = 6;
 int length = 0;
@@ -64,7 +64,7 @@ double Delta_theta = 0;
 double delta_fwd = 0;
 double delta_strafe = 0;
 double robot_odometry_initialvalues[3] = {0, 0, 0};
-double robot_odometry_coordinates[3] = {0, 0, 0};
+double robot_odometry_coordinates[3] = {130, 34, 0};
 double encoder_positions_old[3] = {0,0,0};
 double encoder_positions_new[3] = {0,0,0};
 int obamatreecounter = 0;
@@ -79,17 +79,19 @@ void StopAllChasis(void) {
 }
 
 void moveForward(double amount) {
-  LeftFront.startSpinFor(amount, degrees);
-  LeftRear.startSpinFor(amount, degrees);
-  RightFront.startSpinFor(amount, degrees);
-  RightRear.spinFor(amount, degrees);
+  double d = 360 * amount / ((4 * M_PI));
+  LeftFront.startSpinFor(d, degrees);
+  LeftRear.startSpinFor(d, degrees);
+  RightFront.startSpinFor(d, degrees);
+  RightRear.spinFor(d, degrees);
 }
 
 void moveBackwards(double amount) {
-  LeftFront.startSpinFor(-amount, degrees);
-  LeftRear.startSpinFor(-amount, degrees);
-  RightFront.startSpinFor(-amount, degrees);
-  RightRear.spinFor(-amount, degrees);
+  double d = 360 * amount / (4 * M_PI);
+  LeftFront.startSpinFor(-d, degrees);
+  LeftRear.startSpinFor(-d, degrees);
+  RightFront.startSpinFor(-d, degrees);
+  RightRear.spinFor(-d, degrees);
 }
 
 void turnLeft(double amount) {
@@ -276,16 +278,19 @@ void OdomSpinTo(double Target_theta) {
   RightRear.stop(hold);
 }
 
-void OdomMoveTo (double Target_x, double Target_y) {
+void OdomSpinToCoordinate (double Target_x, double Target_y) {
   obamatree();
-  double diff_x = Target_x+robot_odometry_coordinates[0];
+  double diff_x = Target_x-robot_odometry_coordinates[0];
   double diff_y = Target_y-robot_odometry_coordinates[1];
   double pythTheta = atan(diff_y/diff_x);
-  //Brain.Screen.printAt(25, 50, "pyththeta: %f", RectifyAngle(pythTheta*180/M_PI));
+  Brain.Screen.printAt(25, 50, "dx: %f", diff_x);
+  Brain.Screen.printAt(25, 75, "dy %f", diff_y);
+  Brain.Screen.printAt(25, 100, "pyththeta %f", pythTheta);
+  wait(10,sec);
   OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
   OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
   obamatree();
-  diff_x = Target_x+robot_odometry_coordinates[0];
+  diff_x = Target_x-robot_odometry_coordinates[0];
   diff_y = Target_y-robot_odometry_coordinates[1];
   pythTheta = atan(diff_y/diff_x);
   Brain.Screen.printAt(25, 50, "dx: %f", diff_x);
@@ -295,7 +300,7 @@ void OdomMoveTo (double Target_x, double Target_y) {
   OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
   OdomSpinTo(RectifyAngle(pythTheta*180/M_PI));
   obamatree();
-  diff_x = Target_x+robot_odometry_coordinates[0];
+  diff_x = Target_x-robot_odometry_coordinates[0];
   diff_y = Target_y-robot_odometry_coordinates[1];
   pythTheta = atan(diff_y/diff_x);
   Brain.Screen.printAt(25, 50, "dx: %f", diff_x);
@@ -312,12 +317,12 @@ void OdomMoveTo (double Target_x, double Target_y) {
 
   //wait(0.5,sec);
 
-  while (fabs(diff_x)>0.2) {
+  /*while (fabs(diff_x)>0.2) {
     obamatree();
     diff_x = Target_x + robot_odometry_coordinates[0];
     diff_y = Target_y - robot_odometry_coordinates[1];
 
-    /*LeftFront.setVelocity(30, percent);
+    LeftFront.setVelocity(30, percent);
     RightFront.setVelocity(30, percent);
     LeftRear.setVelocity(30, percent);
     RightRear.setVelocity(30, percent);
@@ -327,7 +332,7 @@ void OdomMoveTo (double Target_x, double Target_y) {
     LeftFront.spin(forward);
     LeftRear.spin(forward);
     RightFront.spin(forward);
-    RightRear.spin(forward);*/
+    RightRear.spin(forward);
     LeftFront.spin(forward, 7.8740157480314, volt);
     RightFront.spin(forward, 7.8740157480314, volt);
     LeftRear.spin(forward,  7.8740157480314, volt);
@@ -343,7 +348,7 @@ void OdomMoveTo (double Target_x, double Target_y) {
   //LeftRear.stop(hold);
   //RightFront.stop(hold);
   //RightRear.stop(hold);
-  //OdomSpinTo(Target_theta);
+  //OdomSpinTo(Target_theta);*/
 }
 
 
@@ -495,10 +500,57 @@ void autonomous(void) {
     case 2:
       break;
     case 3:
-      // spin left roller then shoot
+      LeftFront.setVelocity(100, percent);
+      RightFront.setVelocity(100, percent);
+      LeftRear.setVelocity(100, percent);
+      RightRear.setVelocity(100, percent);
+      Vacuum.setVelocity(100, percent);
+
+      obamatree();
+      moveForward(0.5);
+      moveBackwards(2);
+      obamatree();
       break;
     case 4:
-      // spin right roller then shoot
+      Vacuum.setPosition(0, degrees);
+      obamatree();
+      LeftFront.setVelocity(100, percent);
+      RightFront.setVelocity(100, percent);
+      LeftRear.setVelocity(100, percent);
+      RightRear.setVelocity(100, percent);
+      Vacuum.setVelocity(100, percent);
+      Flywheel1.spin(reverse, 15, volt);
+      Flywheel2.spin(forward, 15, volt);
+      moveForward(2);
+      wait(0.35, seconds);
+      Flywheel1.spin(reverse, 10.05, volt);
+      Flywheel2.spin(forward, 10.05, volt);
+      Vacuum.spinToPosition(-120, degrees);
+      wait(0.25, seconds);
+      moveBackwards(3.5);
+      obamatree();
+      wait(1.2, seconds);
+      useLauncher();
+      Flywheel1.spin(reverse, 15, volt);
+      Flywheel2.spin(forward, 15, volt);
+      wait(0.5, seconds);
+      Flywheel1.spin(reverse, 10.05, volt);
+      Flywheel2.spin(forward, 10.05, volt);
+      wait(0.5, seconds);
+      useLauncher();
+      Flywheel1.spin(reverse, 0, volt);
+      Flywheel2.spin(forward, 0, volt);
+      wait(0.1, seconds);
+      //obamatree();
+      //OdomSpinToCoordinate(18,34);
+      //obamatree();
+      Vacuum.spin(forward);
+      obamatree();
+      OdomSpinTo(345);
+      moveForward(20);
+      wait(0.1, sec);
+      moveForward(20);
+      OdomSpinToCoordinate(18,34);
       break;
     case 5:
       // spin left roller, shoot, get more discs, shoot
@@ -549,14 +601,17 @@ void drivercontrol(void) {
   RightRear.setBrake(brake);
 
   LeftFront.setMaxTorque(100, percent);
-  RightFront.setMaxTorque(100, percent);
   LeftRear.setMaxTorque(100, percent);
+  RightFront.setMaxTorque(100, percent);
   RightRear.setMaxTorque(100, percent);
   Brain.Screen.clearScreen();
 
   //robot_odometry_coordinates[0] = 0;
   //robot_odometry_coordinates[1] = 0;
   //robot_odometry_coordinates[2] = 0;
+
+  
+  
      
   while (1) {
     obamatree();
@@ -568,7 +623,7 @@ void drivercontrol(void) {
     LeftRear.spin(forward, (Controller1.Axis3.position() + Controller1.Axis1.position()) / 7.8740157480314, volt);
     RightRear.spin(forward, (Controller1.Axis3.position() - Controller1.Axis1.position()) / 7.8740157480314, volt);
     if(Controller1.ButtonL2.pressing()) {
-      useForwardFlywheel();
+      useForwardFlywheelVariable();
     } 
     else {
       Flywheel1.stop(coast);
@@ -650,12 +705,16 @@ void drivercontrol(void) {
     }
 
     if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)) {
-      RobotLaunchVariable -= 1;
+      RobotLaunchVariable -= 0.05;
+      Controller1.Screen.clearScreen();
+      Controller1.Screen.newLine();
       Controller1.Screen.print(RobotLaunchVariable);
       wait(250, msec);
     }
     if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 12)) {
-      RobotLaunchVariable += 1;
+      RobotLaunchVariable += 0.05;
+      Controller1.Screen.clearScreen();
+      Controller1.Screen.newLine();
       Controller1.Screen.print(RobotLaunchVariable);
       wait(250, msec);
     }
@@ -663,7 +722,7 @@ void drivercontrol(void) {
       P1.open();
     }
     if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/) {
-      OdomMoveTo(0, 0, 0);
+      //OdomMoveTo(0,0);
       // useReverseFlywheel();
       // Brain.Screen.print(EncoderA.position(degrees));
       // wait(.5, sec);
@@ -682,16 +741,7 @@ int main() {
   obamatree();
 
   //OdomSpinTo(45);
-  OdomMoveTo(10,10);
-
-  wait(1, sec);
-
-  obamatree();
-
-  OdomMoveTo(20,-10);
-
-  //wait(5, sec);
-
+  //wait(0.5, sec);
   //obamatree();
 
   //OdomMoveTo(35,15);
