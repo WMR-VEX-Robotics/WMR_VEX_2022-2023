@@ -167,28 +167,16 @@ double findDistance(double x, double y) {
 
 // *************** ODAMATREE *****************
 
-void updateOdometry() {
-  Delta_L = ((EncoderB.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
-  Delta_R = ((EncoderC.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
-  Delta_C = ((EncoderA.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
-}
-
-double RectifyAngle(double Angle)
-{
+double RectifyAngle(double Angle) {
   double normalizedAngle = fmod(Angle,360);
-  if(normalizedAngle<0)
-  {
+  if(normalizedAngle<0) {
     return normalizedAngle+360;
-  }
-  else
-  {
+  } else {
     return normalizedAngle;
   }
-
 }
 
-void obamatree()
-{
+void obamatree() {
   encoder_positions_new[0] = ((EncoderB.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
   encoder_positions_new[1] = ((EncoderC.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
   encoder_positions_new[2] = ((EncoderA.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
@@ -220,24 +208,21 @@ void obamatree()
   //Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry_coordinates[2]);
 }
 
-double distanceBetweenTwoAngles (double angle1, double angle2)
-{
+double distanceBetweenTwoAngles (double angle1, double angle2) {
   double dist1 = angle1-angle2;
   double dist2 = angle2-angle1;
   dist1 = std::max(dist1,dist2);
   return std::min(dist1,360-dist1);
 }
 
-void OdomSpinTo(double Target_theta)
-{
+void OdomSpinTo(double Target_theta) {
   obamatree();
   double actualtheta = RectifyAngle((-robot_odometry_coordinates[2]*180/M_PI));
   double startingtheta = actualtheta;
   double ToGo = distanceBetweenTwoAngles(startingtheta, Target_theta);
   double ToGoFull = ToGo;
   //Brain.Screen.printAt(25, 75, "togofull: %f", ToGoFull);
-  while(fabs(actualtheta-Target_theta)>0.3)
-  {
+  while(fabs(actualtheta-Target_theta)>0.3) {
     obamatree();
     actualtheta = RectifyAngle((-robot_odometry_coordinates[2]*180/M_PI));
     ToGo = distanceBetweenTwoAngles(actualtheta, Target_theta);
@@ -250,30 +235,23 @@ void OdomSpinTo(double Target_theta)
     RightRear.setVelocity(((100*(ToGo/ToGoFull)+6)*ToGoFull/360)+5, percent);
     //Brain.Screen.printAt(25, 100, "togo/togofull: %f", ToGo/ToGoFull);
     
-    if(Target_theta > 180)
-    {
-      if((Target_theta - 180) < startingtheta && startingtheta < Target_theta)
-      {
+    if(Target_theta > 180) {
+      if((Target_theta - 180) < startingtheta && startingtheta < Target_theta) {
         //Brain.Screen.printAt(25, 50, "path 1");
 
         LeftFront.spin(reverse);
         LeftRear.spin(reverse);
         RightFront.spin(forward);
         RightRear.spin(forward);
-      }
-      else
-      {
+      } else {
         //Brain.Screen.printAt(25, 50, "path 2");
         LeftFront.spin(forward);
         LeftRear.spin(forward);
         RightFront.spin(reverse);
         RightRear.spin(reverse);
       }
-    }
-    else
-    {
-      if(Target_theta < startingtheta && startingtheta < (Target_theta + 180))
-      {
+    } else {
+      if(Target_theta < startingtheta && startingtheta < (Target_theta + 180)) {
         //Brain.Screen.printAt(25, 50, "path 3");
         LeftFront.spin(forward);
         LeftRear.spin(forward);
@@ -283,9 +261,7 @@ void OdomSpinTo(double Target_theta)
         //Brain.Screen.printAt(25, 25, "target theta: %f", Target_theta);
         //Brain.Screen.printAt(25, 50, "strating theta: %f", startingtheta);
         //Brain.Screen.printAt(725, 75, "target theta+180: %f", Target_theta+180);
-      }
-      else
-      {
+      } else {
         //Brain.Screen.printAt(25, 50, "path 4");
         LeftFront.spin(reverse);
         LeftRear.spin(reverse);
@@ -300,8 +276,7 @@ void OdomSpinTo(double Target_theta)
   RightRear.stop(hold);
 }
 
-void OdomMoveTo (double Target_x, double Target_y)
-{
+void OdomMoveTo (double Target_x, double Target_y) {
   obamatree();
   double diff_x = Target_x+robot_odometry_coordinates[0];
   double diff_y = Target_y-robot_odometry_coordinates[1];
