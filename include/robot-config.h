@@ -2,25 +2,19 @@ using namespace vex;
 
 extern brain Brain;
 
-using signature = vision::signature;
-
 // VEXcode devices
-extern motor Top_Left;
-extern motor Top_Right;
-extern motor Bottom_Left;
-extern motor Bottom_Right;
 extern controller Controller1;
-extern signature Vision5__DISK;
-extern signature Vision5__DISK2;
-extern signature Vision5__DISK3;
-extern signature Vision5__BLUENET;
-extern signature Vision5__REDNET;
-extern signature Vision5__DISK6;
-extern signature Vision5__DISK7;
-extern vision Vision5;
-extern motor Vacuum;
-extern motor Flywheel;
-extern limit MagCap;
+extern motor LeftFront;
+extern motor LeftRear;
+extern motor RightFront;
+extern motor RightRear;
+extern motor Flywheel1;
+extern motor Flywheel2;
+extern motor Launch;
+extern pneumatics P1;
+extern brain Brain;
+extern encoder EncoderA;
+
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

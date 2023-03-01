@@ -1,730 +1,453 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
-/*    Author:       C:\Users\bowma                                            */
-/*    Created:      Sun Oct 09 2022                                           */
+/*    Author:       Carlo, Jacob, and Erik and a little bit of Jeffrey        */
+/*    Created:      Tue Sep 27 2022                                           */
 /*    Description:  V5 project                                                */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Top_Left             motor         1               
-// Top_Right            motor         2               
-// Bottom_Left          motor         3               
-// Bottom_Right         motor         4               
-// Controller1          controller                    
-// Vision5              vision        5               
-// Vacuum               motor         6               
-// Flywheel             motor         7               
-// MagCap               limit         A               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-
 #include "vex.h"
-
+#include <cmath>
+#include <algorithm>
 
 using namespace vex;
 
- int userDrive;
- int gameMode;
-//Game Mode 0 = pregame. Game Mode 1 = Autonomous. Game Mode 2 = User Control.
- int vSpin;
- int bF;
- int bS;
- int bT;
- int bFo;
- int stoppingReason;
- int detectedTaskchecker;
- int fifteenSecUpYet;
+// A global instance of competition
+competition Competition;
 
- void breakFactors(void){
-  if (bF == 1){
-    while (bF == 1){
-      break;
-    }
+// A global instance of brain used for printing to the V5 Brain screen
+brain Brain;
+
+// VEXcode device constructors
+controller Controller1 = controller(primary);
+motor LeftFront = motor(PORT8, ratio18_1, false);
+motor LeftRear = motor(PORT7, ratio18_1, false);
+motor RightFront = motor(PORT10, ratio18_1, true);
+motor RightRear = motor(PORT9, ratio18_1, true);
+motor Vacuum = motor(PORT20, ratio18_1, true);
+motor Launch = motor(PORT3, ratio6_1, true);
+motor Flywheel1 = motor(PORT4, ratio6_1, false);
+motor Flywheel2 = motor(PORT5, ratio6_1, true);
+pneumatics P1 = pneumatics(Brain.ThreeWirePort.G);
+
+// define variable for remote controller enable/disable
+bool RemoteControlCodeEnabled = true;
+bool release = false;
+double RobotLaunchVariable = 7.5;
+int auton = 1;
+int AutonMin = 0;
+int AutonMax = 6;
+int length = 0;
+int lengthSum = 0;
+int lengthAvg = 0;
+int startTime = 0;
+double Cx = 0;
+double Cy = 0;
+double dist = 0;
+int intake = 2;
+bool spinvacmore = false;
+
+
+//odometry variable
+double OdomWheelDiam = 2.79;
+double L_dist_to_center = 4.13;
+double R_dist_to_center = 3.85;
+double C_dist_to_center = 6.5;
+double Delta_L = 0;
+double Delta_R = 0;
+double Delta_C = 0;
+double Delta_theta = 0;
+double delta_fwd = 0;
+double delta_strafe = 0;
+double robot_odometry_initialvalues[3] = {0, 0, 0};
+double robot_odometry_coordinates[3] = {0, 0, 0};
+double encoder_positions_old[3] = {0,0,0};
+double encoder_positions_new[3] = {0,0,0};
+int obamatreecounter = 0;
+
+// ***************** DRIVE ********************
+
+void StopAllChasis(void) {
+  LeftFront.stop(hold);
+  LeftRear.stop(hold);
+  RightFront.stop(hold);
+  RightRear.stop(hold);
+}
+
+void moveForward(double amount) {
+  LeftFront.startSpinFor(amount, degrees);
+  LeftRear.startSpinFor(amount, degrees);
+  RightFront.startSpinFor(amount, degrees);
+  RightRear.spinFor(amount, degrees);
+}
+
+void moveBackwards(double amount) {
+  LeftFront.startSpinFor(-amount, degrees);
+  LeftRear.startSpinFor(-amount, degrees);
+  RightFront.startSpinFor(-amount, degrees);
+  RightRear.spinFor(-amount, degrees);
+}
+
+void turnLeft(double amount) {
+  LeftFront.startSpinFor(-amount, degrees);
+  LeftRear.startSpinFor(-amount, degrees);
+  RightFront.startSpinFor(amount, degrees);
+  RightRear.spinFor(amount, degrees);
+}
+
+void turnRight(double amount) {
+  LeftFront.startSpinFor(amount, degrees);
+  LeftRear.startSpinFor(amount, degrees);
+  RightFront.startSpinFor(-amount, degrees);
+  RightRear.spinFor(-amount, degrees);
+
+}
+
+// **************** VACUUM ********************
+
+void useForwardVacuum(int percent) {
+  Vacuum.spin(forward, percent, pct);
+}
+
+void useReverseVacuum(int percent) {
+  Vacuum.spin(reverse, percent, pct);
+}
+
+// *************** LAUNCHER *******************
+
+void useLauncher() {
+  Launch.spin(forward, 15, volt);
+  wait(0.25, seconds);
+  Launch.stop(brake);
+  if(Controller1.ButtonR2.pressing()) {
+    useLauncher();
+  }
+}
+
+// *************** FLYWHEEL *******************
+
+void useForwardFlywheel() {
+  Flywheel1.setStopping(coast);
+  Flywheel2.setStopping(coast);
+  if(Flywheel2.velocity(rpm) < 325) {
+    Flywheel1.spin(reverse, 15, volt);
+    Flywheel2.spin(forward, 15, volt);
   } else {
-    while (bF == 0){
-      continue;
-    }
-  }
-
-  if (bS == 1){
-      while (bS == 1){
-      break;
-    }
-  } else {
-    while(bS == 0){
-      continue;
-    }
-  }
-
-  if (bT == 1){
-    while (bT == 1){
-      break;
-    }
-  } else {
-    while(bT == 0){
-      continue;
-    }
-
-  }
-
-  if (bFo == 1){
-    while (bFo == 1){
-      break;
-    }
-  } else {
-    while (bFo == 0){
-      continue;
-    }
-  }
-  
-}
-
-void setup_x_drive(void) {
-  
-  Top_Left.current();
-  Top_Left.efficiency();
-  Top_Left.power();
-  Top_Left.setMaxTorque(1000, percent);
-  Top_Left.setVelocity(3200, rpm);
-
-  Bottom_Left.current();
-  Bottom_Left.efficiency();
-  Bottom_Left.power();
-  Bottom_Left.setMaxTorque(1000, percent);
-  Bottom_Left.setVelocity(3200, rpm);
-
-  Top_Right.current();
-  Top_Right.efficiency();
-  Top_Right.power();
-  Top_Right.setMaxTorque(1000, percent);
-  Top_Right.setVelocity(3200, rpm);
-
-  Bottom_Right.current();
-  Bottom_Right.efficiency();
-  Bottom_Right.power();
-  Bottom_Right.setMaxTorque(1000, percent);
-  Bottom_Right.setVelocity(3200, rpm);
-
-  int avgEfficiency = ((Top_Left.efficiency() + Bottom_Left.efficiency() + Top_Right.efficiency() + Bottom_Right.efficiency()) / 4);
-   if (avgEfficiency < 90 ) {
-    Controller1.Screen.print("ERROR 1 IMPROPER EFFICIENCY FOR OVERCLOCK DISCONTINUE");
-    wait(2, seconds);
-    Top_Left.setMaxTorque(100, percent);
-    Top_Left.setVelocity(600, rpm);
-    Bottom_Left.setMaxTorque(100, percent);
-    Bottom_Left.setVelocity(600, rpm);
-    Top_Right.setMaxTorque(100, percent);
-    Top_Right.setVelocity(600, rpm);
-    Bottom_Right.setMaxTorque(100, percent);
-    Bottom_Right.setVelocity(600, rpm);
-    Controller1.Screen.clearLine(1);
-    bF = 1;
-   } else {
-      Controller1.Screen.print("CHECK GREEN");
-      Controller1.Screen.setCursor(2, 1);
-      Controller1.Screen.print(avgEfficiency);
-      wait(1, seconds);
-      Controller1.Screen.clearScreen();
-      bF = 0;
-    }
-  //this prevents the robot from running at the specified overclock if the efficiency is not balanced
-
-  int avgCurrent = ((Top_Left.current() + Top_Right.current() + Bottom_Left.current() + Bottom_Right.current()) / 4);
-  Controller1.Screen.print(avgCurrent);
-  wait(1, seconds);
-  Controller1.Screen.clearScreen();
-  //this just tells you how much current you are pulling
-
-  int avgPower = ((Top_Left.power() + Top_Right.power() + Bottom_Left.power() + Bottom_Right.power()) / 4);
-  Controller1.Screen.print(avgPower);
-  wait(1, seconds);
-  Controller1.Screen.clearScreen();
-  //same as current but with power
-  breakFactors();
-}
-
-void vacuum_configuration(void) {
-  Vacuum.current();
-  Vacuum.efficiency();
-  Vacuum.power();
-  Vacuum.setMaxTorque(250, percent);
-  Vacuum.setVelocity(1200, rpm);
-  
-  if (Vacuum.efficiency() < 90) {
-    Vacuum.setMaxTorque(100, percent);
-    Vacuum.setVelocity(600, rpm);
-    Controller1.Screen.print("ERROR 2 VACUUM OVERCLOCK NOT POSSIBLE");
-    bS = 1;
-    wait(1, seconds);
-    Controller1.Screen.clearScreen();
-  } else {
-    Controller1.Screen.print("CHECK GREEN");
-    bS = 0;
-    wait(1, seconds);
-    Controller1.Screen.clearScreen();
-  }
-
-  Vacuum.spinToPosition(0, degrees, true);
-  breakFactors();
-}
-
-void rvacuum_check(void){
-  if (vSpin == 0){
-    Vacuum.stop();
-    wait(5, seconds);
-    Vacuum.spin(forward, 1200, rpm);
+    Flywheel1.spin(reverse, 7.5, volt);
+    Flywheel2.spin(forward, 7.5, volt);
   }
 }
 
-void flywheel_calibration(void){
-  if(Flywheel.efficiency() >= 90){
-    Flywheel.spin(forward, 3200, rpm);
-    if (Flywheel.isSpinning() == false){
-      Flywheel.stop(brake);
-      Controller1.Screen.print("HELP");
-      Brain.Screen.print("FLYWHEEL MALFUNCTION");
-      bFo = 1;
-    } else {
-      bFo = 0;
-    }
-    wait(50, msec);
-    Flywheel.stop(brake);
-    Flywheel.spin(reverse, 3200, rpm);
-    if (Flywheel.isSpinning() == false){
-      Flywheel.stop(brake);
-      Controller1.Screen.print("HELP");
-      Brain.Screen.print("FLYWHEEL MALFUNCTION");
-      bFo = 1;
-    } else {
-      bFo = 0;
-    }
-    wait(50, msec);
-    Flywheel.stop(brake);
-    Flywheel.setPosition(0, degrees);
-  }
-  breakFactors();
+void useReverseFlywheel() {
+  Flywheel1.setStopping(coast);
+  Flywheel2.setStopping(coast);
+  Flywheel1.spin(forward, 15, volt);
+  Flywheel2.spin(reverse, 15, volt);
 }
 
-void flywheel_config(void){
-  Flywheel.current();
-  Flywheel.efficiency();
-  Flywheel.power();
-  Flywheel.setMaxTorque(2000, percent);
-  Flywheel.setVelocity(3200, rpm);
-  if (Flywheel.efficiency() < 90){
-    Controller1.Screen.print("ERROR 4 FLYWHEEL NOT OVERCLOCKABLE");
-    bT = 1;
-    wait(1, seconds);
-    Controller1.Screen.clearScreen();
-  } else {
-    Controller1.Screen.print("CHECK GREEN");
-    bT = 0;
-    wait(1, seconds);
-    Controller1.Screen.clearScreen();
-  }
-  flywheel_calibration();
-  breakFactors();
+void useForwardFlywheelVariable() {
+  Flywheel1.setVelocity(300, rpm);
+  Flywheel2.setVelocity(300, rpm);
+  Flywheel1.setStopping(coast);
+  Flywheel1.spin(reverse, RobotLaunchVariable, volt);
+  Flywheel2.setStopping(coast);
+  Flywheel2.spin(forward, RobotLaunchVariable, volt);
 }
 
-void vacuum_check(void){
-  if (Vacuum.isSpinning() == true){
-    Brain.Screen.print("Vacuum Check");
-    vSpin = 1;
-  } 
-  if (Vacuum.isSpinning() == false) {
-    Brain.Screen.print("HELP ERROR 3: VACUUM NOT STARTED");
-    while(Vacuum.isSpinning() == false){
-      vSpin = 0;
-      for (int i = 1; i <= 11; ++i) {
-        Controller1.Screen.print("SEND HELP");
-        wait(1, seconds);
-        Controller1.Screen.clearScreen();
-      }
-    }
-  }
-  if (vSpin == 0){
-    rvacuum_check();
-  }
-  breakFactors();
-} // build this to test
-void flywheelFire(void){
-  Flywheel.spin(forward, 3200, rpm);
-  wait(50, msec);
-  Flywheel.stop(brake);
-  Flywheel.spin(reverse, 3200, rpm);
-  wait(50, msec);
-  Flywheel.stop(brake);
-}
-
-//for streamline methods for auton code.
-void autonblueMovement(void){
-  stoppingReason = 0;
-  detectedTaskchecker = 0;
-  while(detectedTaskchecker == 0){
-    Top_Left.spin(forward);
-    Top_Right.spin(forward);
-    Bottom_Left.spin(forward);
-    Bottom_Right.spin(forward);
-  }
-  if (Vision5.takeSnapshot(Vision5__DISK) == true){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-    if (MagCap.pressing() == true){
-     stoppingReason = 1;
-     for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     Top_Left.spin(forward);
-     Top_Right.spin(forward);
-     Bottom_Left.spin(forward);
-     Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot(Vision5__BLUENET) == true){
-       Top_Left.stop(brake);
-       Top_Right.stop(brake);
-       Bottom_Left.stop(brake);
-       Bottom_Right.stop(brake);
-       for (int i = 1; i <= 3; i++){
-        flywheelFire();
-       }
-      }
-    } else {
-      stoppingReason = 0;
-      detectedTaskchecker = 0;
-    }
-  }
-   if (Vision5.takeSnapshot(Vision5__DISK3) == true){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-    if (MagCap.pressing() == true){
-     stoppingReason = 1;
-     for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     Top_Left.spin(forward);
-     Top_Right.spin(forward);
-     Bottom_Left.spin(forward);
-     Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot(Vision5__BLUENET) == true){
-       Top_Left.stop(brake);
-       Top_Right.stop(brake);
-       Bottom_Left.stop(brake);
-       Bottom_Right.stop(brake);
-       for (int i = 1; i <= 3; i++){
-        flywheelFire();
-       }
-      }
-    } else {
-      stoppingReason = 0;
-      detectedTaskchecker = 0;
-    }
-  }
-   if (Vision5.takeSnapshot(Vision5__DISK6) == true){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-    if (MagCap.pressing() == true){
-     stoppingReason = 1;
-     for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     Top_Left.spin(forward);
-     Top_Right.spin(forward);
-     Bottom_Left.spin(forward);
-     Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot(Vision5__BLUENET) == true){
-       Top_Left.stop(brake);
-       Top_Right.stop(brake);
-       Bottom_Left.stop(brake);
-       Bottom_Right.stop(brake);
-       for (int i = 1; i <= 3; i++){
-        flywheelFire();
-       }
-      }
-    } else {
-      stoppingReason = 0;
-      detectedTaskchecker = 0;
-    }
-  }
-}
-
-void autonredMovement(void){
-  stoppingReason = 0;
-  detectedTaskchecker = 0;
-  while(detectedTaskchecker == 0){
-    Top_Left.spin(forward);
-    Top_Right.spin(forward);
-    Bottom_Left.spin(forward);
-    Bottom_Right.spin(forward);
-  }
-  if (Vision5.takeSnapshot((1, 2127, 2473, 2300, -5239, -4555, -4897, 3, 0), 1)){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-    if (MagCap.pressing() == true){
-     stoppingReason = 1;
-     for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     Top_Left.spin(forward);
-     Top_Right.spin(forward);
-     Bottom_Left.spin(forward);
-     Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
-       Top_Left.stop(brake);
-       Top_Right.stop(brake);
-       Bottom_Left.stop(brake);
-       Bottom_Right.stop(brake);
-       for (int i = 1; i <= 3; i++){
-        flywheelFire();
-       }
-      }
-    } else {
-      stoppingReason = 0;
-      detectedTaskchecker = 0;
-    }
-  }
-   if (Vision5.takeSnapshot((2, -1, 627, 313, -4755, -4337, -4546, 3, 0), 1)){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-    if (MagCap.pressing() == true){
-     stoppingReason = 1;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     Top_Left.spin(forward);
-     Top_Right.spin(forward);
-     Bottom_Left.spin(forward);
-     Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
-       Top_Left.stop(brake);
-       Top_Right.stop(brake);
-       Bottom_Left.stop(brake);
-       Bottom_Right.stop(brake);
-       for (int i = 1; i <= 3; i++){
-        flywheelFire();
-       }
-      }
-    } else {
-      stoppingReason = 0;
-      detectedTaskchecker = 0;
-    }
-  }
-   if (Vision5.takeSnapshot((3, 3059, 3601, 3330, -4511, -3537, -4024, 3, 0), 1)){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-    if (MagCap.pressing() == true){
-     stoppingReason = 1;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     Top_Left.spin(forward);
-     Top_Right.spin(forward);
-     Bottom_Left.spin(forward);
-     Bottom_Right.spin(forward);
-      if (Vision5.takeSnapshot((5, 9291, 10507, 9899, -1489, -797, -1143, 3, 0), 1)){
-       Top_Left.stop(brake);
-       Top_Right.stop(brake);
-       Bottom_Left.stop(brake);
-       Bottom_Right.stop(brake);
-       for (int i = 1; i <= 3; i++){
-        flywheelFire();
-       }
-      }
-    } else {
-      stoppingReason = 0;
-      detectedTaskchecker = 0;
-    }
-  }
-}
-
-void auton_modepreliminary(void){
-stoppingReason = 0;
-  detectedTaskchecker = 0;
-  while(detectedTaskchecker == 0){
-    Top_Left.spin(forward, 3200, rpm);
-    Top_Right.spin(forward, 3200, rpm);
-    Bottom_Left.spin(forward, 3200, rpm);
-    Bottom_Right.spin(forward, 3200, rpm);
-  }
-  if (Vision5.takeSnapshot(Vision5__DISK) == true){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-   
-  }
-   if (Vision5.takeSnapshot(Vision5__DISK3) == true){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-   }
-   if (Vision5.takeSnapshot(Vision5__DISK6) == true){
-    detectedTaskchecker = 1;
-    stoppingReason = 0;
-    for (int i = 1; i < 2; i++){
-        Top_Left.stop(brake);
-        Top_Right.stop(brake);
-        Bottom_Left.stop(brake);
-        Bottom_Right.stop(brake);
-      }
-     while(stoppingReason == 0){
-     Top_Left.spin(forward, 3200, rpm);
-     Bottom_Left.spin(reverse, 3200, rpm);
-     Bottom_Right.spin(reverse, 3200, rpm);
-     Top_Right.spin(forward, 3200, rpm);
-     }
-   
-  }
-}
-
-void auton_mode(void){
-  if (gameMode == 1) {
-      Controller1.Screen.print("Auton");
-      wait(50, msec);
-      Controller1.Screen.clearScreen();
-  }
-  //Vacuum.spin(forward, 1200, rpm);
-  //vacuum_check();
-  fifteenSecUpYet = 0;
-  while (fifteenSecUpYet == 0){
-     auton_modepreliminary();
-  }
-  //bookmark1
-  wait(15, seconds);
-  fifteenSecUpYet = 1;
-  Top_Left.stop(brake);
-  Top_Right.stop(brake);
-  Bottom_Left.stop(brake);
-  Bottom_Right.stop(brake);
-  //Flywheel.stop(brake);
-  //Vacuum.stop(brake);
-  gameMode = 2;
-}
-
-
-void fullBrake(void){
-  Top_Left.stop(brake);
-  Top_Right.stop(brake);
-  Bottom_Left.stop(brake);
-  Bottom_Right.stop(brake);
-}
-void temperature_grab(void){
-  Brain.Screen.print(Top_Left.temperature(celsius));
-  Brain.Screen.setCursor(2, 1);
-  Brain.Screen.print(Top_Right.temperature(celsius));
-  Brain.Screen.setCursor(3, 1);
-  Brain.Screen.print(Bottom_Left.temperature(celsius));
-  Brain.Screen.setCursor(4, 1);
-  Brain.Screen.print(Bottom_Right.temperature(celsius));
-  Brain.Screen.setCursor(5, 1);
-  Brain.Screen.print(Vacuum.temperature(celsius));
-  Brain.Screen.setCursor(6, 1);
-  Brain.Screen.print(Flywheel.temperature(celsius));
-  wait(20, seconds);
+// **************** DISTANCE *****************
+void drawGUI() {
+  // Draws 2 buttons to be used for selecting auto
   Brain.Screen.clearScreen();
+  Brain.Screen.setFillColor(red);
+  Brain.Screen.drawRectangle(20, 50, 50, 50);
+  Brain.Screen.printAt(25, 75, "0");
+  Brain.Screen.setFillColor(orange);
+  Brain.Screen.drawRectangle(120, 50, 50, 50);
+  Brain.Screen.printAt(125, 75, "1");
+  Brain.Screen.setFillColor(yellow);
+  Brain.Screen.drawRectangle(220, 50, 50, 50);
+  Brain.Screen.printAt(225, 75, "2");
+  Brain.Screen.setFillColor(green);
+  Brain.Screen.drawRectangle(320, 50, 50, 50);
+  Brain.Screen.printAt(325, 75, "3");
+  Brain.Screen.setFillColor(blue);
+  Brain.Screen.drawRectangle(20, 150, 50, 50);
+  Brain.Screen.printAt(25, 175, "4");
+  Brain.Screen.setFillColor(purple);
+  Brain.Screen.drawRectangle(120, 150, 50, 50);
+  Brain.Screen.printAt(125, 175, "5");
+  Brain.Screen.setFillColor(ClrPink);
+  Brain.Screen.drawRectangle(220, 150, 50, 50);
+  Brain.Screen.printAt(225, 175, "6");
+  Brain.Screen.setFillColor(ClrGreenYellow);
+  Brain.Screen.drawRectangle(320, 150, 50, 50);
+  Brain.Screen.printAt(325, 175, "7");
+  Brain.Screen.setFillColor(black);
 }
 
-void xdrive_user_control(void){
-  double velocityControl1 = (Controller1.Axis2.position() + 100);
-  double velocityControl2 = (velocityControl1 / 200);
-  Top_Left.spin(forward, (((-Controller1.Axis3.position()) - Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
-  Bottom_Left.spin(reverse, (((-Controller1.Axis3.position()) + Controller1.Axis4.position() - (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
-  Top_Right.spin(forward, ((Controller1.Axis3.position() - Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2,volt);
-  Bottom_Right.spin(reverse, ((Controller1.Axis3.position() + Controller1.Axis4.position() -  (Controller1.Axis1.position() / 2))) * velocityControl2, volt);
-  if (Controller1.ButtonY.pressing()){
-    fullBrake();
-  } //impliment soft braking.
- if (Controller1.ButtonR2.pressing()){
-  Top_Left.spin(forward, 50, volt);
-  Bottom_Left.spin(reverse, 50, volt);
-  Bottom_Right.spin(reverse, 50, volt);
-  Top_Right.spin(forward, 50, volt);
- }
-  if (Controller1.ButtonB.pressing()){
-    temperature_grab();
+void selectAuton() {
+  Brain.Screen.printAt(400, 200, "Auton:");
+  int x = Brain.Screen.xPosition(); // get the x position of last touch of the screen
+  int y = Brain.Screen.yPosition(); // get the y position of last touch of the screen
+  // check to see if buttons were pressed
+  if(x >= 20 && x <= 70 && y >= 50 && y <= 100) { // select button pressed
+      auton = 0;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+    } else if(x >= 120 && x <= 170 && y >= 50 && y <= 100) {
+      auton = 1;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+    } else if(x >= 220 && x <= 270 && y >= 50 && y <= 100) {
+      auton = 2;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+    } else if(x >= 320 && x <= 370 && y >= 50 && y <= 100) {
+      auton = 3;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+    } else if(x >= 20 && x <= 70 && y >= 150 && y <= 200) {
+      auton = 4;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+    } else if(x >= 120 && x <= 170 && y >= 150 && y <= 200) {
+      auton = 5;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+    } else if(x >= 220 && x <= 270 && y >= 150 && y <= 200) {
+      auton = 6;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+    } else if(x >= 320 && x <= 370 && y >= 150 && y <= 200) {
+      auton = 7;
+      Brain.Screen.printAt(400, 200, "Auton: %d", auton);
+  }
+  wait(10, msec); // slow it down
+  Brain.Screen.setFillColor(black);
+}
+
+// **************** AUTONOMOUS ****************
+
+void pre_auton(void) {
+  P1.open();
+  Brain.Screen.printAt(1, 40, "pre auton is running");
+  drawGUI();
+  Brain.Screen.pressed(selectAuton);
+}
+
+void autonomous(void) {
+  switch (auton) {
+    case 0:  
+      // does nothing
+      StopAllChasis();
+      break;
+    case 1:
+      // spins up roller on left
+      Vacuum.setPosition(0, degrees);
+      LeftFront.setVelocity(100, percent);
+      RightFront.setVelocity(100, percent);
+      LeftRear.setVelocity(100, percent);
+      RightRear.setVelocity(100, percent);
+      Vacuum.setVelocity(100, percent);
+
+      LeftFront.setPosition(0, degrees);
+      RightFront.setPosition(0, degrees);
+      LeftRear.setPosition(0, degrees);
+      RightRear.setPosition(0, degrees);
+
+      LeftFront.setMaxTorque(25, percent);
+      RightFront.setMaxTorque(25, percent);
+      LeftRear.setMaxTorque(25, percent);
+      RightRear.setMaxTorque(25, percent);
+      Vacuum.setMaxTorque(100, percent);
+
+
+      LeftFront.spinToPosition(90, degrees, 200, rpm, false);
+      LeftRear.spinToPosition(90, degrees, 200, rpm, false);
+      RightFront.spinToPosition(90, degrees, 200, rpm, false);
+      RightRear.spinToPosition(90, degrees, 200, rpm, false);
+
+      wait(.5, sec);
+      
+      Vacuum.spinToPosition(-180, degrees, 200, rpm, true);
+
+      wait(1, sec);
+
+      moveBackwards(90);
+
+      wait(.25, sec);
+
+      turnRight(160);
+
+      wait(.5, sec);
+
+      LeftFront.startSpinFor(-2000, degrees, 100, rpm);
+      LeftRear.startSpinFor(-2000, degrees, 100, rpm);
+      RightFront.startSpinFor(-2000, degrees, 100, rpm);
+      RightRear.spinFor(-2000, degrees, 100, rpm);
+    
+      wait(.5, sec);
+
+      turnLeft(310);
+     
+      //wait(.25, sec);
+
+      // Flywheel1.startSpinFor(-1160, degrees, 100, rpm);
+      Flywheel1.spin(reverse, 8.85, volt);
+      Flywheel2.spin(forward, 8.85, volt);
+      // Flywheel2.spinFor(1160, degrees, 100, rpm);
+
+      wait(2, sec);
+      useLauncher();
+      Flywheel1.spin(reverse, 8.5, volt);
+      Flywheel2.spin(forward, 8.5, volt);
+      wait(2, sec);
+      useLauncher();
+
+      break;
+    case 2:
+      break;
+    case 3:
+      // spin left roller then shoot
+      break;
+    case 4:
+      // spin right roller then shoot
+      break;
+    case 5:
+      // spin left roller, shoot, get more discs, shoot
+      break;
+    case 6:
+      // spin right roller, shoot, get more discs, shoot
+      break;
+    case 7:
+      // spin left rollers, shoot preload, pick up, shoot, spick up, shoot, spin right rollers, pick up, shoot, spick up, shoot
+      moveBackwards(90);
+
+      turnRight(330);
+
+      moveBackwards(775);
+
+      turnRight(330);
+
+      // LeftFront.setBrake(coast);
+      // LeftRear.setBrake(coast);
+      // RightFront.setBrake(coast);
+      // RightRear.setBrake(coast);
+      LeftFront.setVelocity(50, percent);
+      RightFront.setVelocity(50, percent);
+      LeftRear.setVelocity(50, percent);
+      RightRear.setVelocity(50, percent);
+      Vacuum.setVelocity(100, percent);
+
+      moveForward(270);
+
+      Vacuum.spin(forward);
+      LeftFront.setVelocity(25, percent);
+      RightFront.setVelocity(25, percent);
+      LeftRear.setVelocity(25, percent);
+      RightRear.setVelocity(25, percent);
+      wait(1, sec);
+      moveForward(360);
+      break;
   }
 }
 
-void user_mode(void){
-  if (gameMode == 2) {
-     Controller1.Screen.print("User");
-      wait(50, msec);
-      Controller1.Screen.clearScreen();
-  }
-  userDrive = 0;
-  Vacuum.spin(forward, 1200, rpm);
-  if (Vacuum.isSpinning() == false){
-    Vacuum.spin(forward, 1200, rpm);
-    Brain.Screen.print("Restarting Vacuum...");
-    vacuum_check();
-    wait(1, seconds);
-    Brain.Screen.clearScreen();
-  } else {
-    Brain.Screen.print("Rechecking Vacuum...");
-    vacuum_check();
-  }
-  userDrive = 1;
-  while(userDrive == 1){
-    xdrive_user_control();
-    if (Controller1.ButtonR1.pressing()){
-      Flywheel.spin(forward, 3200, rpm);
+// ************** DRIVER CONTROL **************
+
+void drivercontrol(void) {
+  // startTime = Brain.timer(sec);
+  LeftFront.setBrake(brake);
+  LeftRear.setBrake(brake);
+  RightFront.setBrake(brake);
+  RightRear.setBrake(brake);
+
+  LeftFront.setMaxTorque(100, percent);
+  LeftRear.setMaxTorque(100, percent);
+  RightFront.setMaxTorque(100, percent);
+  RightRear.setMaxTorque(100, percent);
+  Brain.Screen.clearScreen();
+  while (1) {
+    if(Controller1.Axis3.value() == 0 && Controller1.Axis1.value() == 0) {StopAllChasis();}
+    LeftFront.spin(forward, (Controller1.Axis3.position() + Controller1.Axis1.position()) / 7.8740157480314, volt);
+    RightFront.spin(forward, (Controller1.Axis3.position() - Controller1.Axis1.position()) / 7.8740157480314, volt);
+    LeftRear.spin(forward, (Controller1.Axis3.position() + Controller1.Axis1.position()) / 7.8740157480314, volt);
+    RightRear.spin(forward, (Controller1.Axis3.position() - Controller1.Axis1.position()) / 7.8740157480314, volt);
+    if(Controller1.ButtonL2.pressing()) {
+      useForwardFlywheel();
+    } 
+    else {
+      Flywheel1.stop(coast);
+      Flywheel2.stop(coast);
+    }
+    if(Controller1.ButtonR2.pressing()) {
+      useLauncher();
+    }
+
+   if(Controller1.ButtonR1.pressing()||Controller1.ButtonL1.pressing()) {
+      if(Controller1.ButtonR1.pressing()) {
+        intake = 1;
+        spinvacmore = false;
+      } 
+      else if(Controller1.ButtonL1.pressing()) {
+        intake = 3;
+        spinvacmore = false;
+      }
+      
+    }
+    else if(spinvacmore == false) {
+      intake = 2;
+      spinvacmore = true;
+    }
+    if(Controller1.ButtonR1.pressing()) {
+      Vacuum.spin(reverse, 100, pct);
+    } else if(!Controller1.ButtonR1.pressing() && !Controller1.ButtonL1.pressing()) {
+      Vacuum.spin(forward, 0, pct);
+    }
+    
+    if(Controller1.ButtonA.pressing()) {
+      intake = 1;
+      spinvacmore = true;
+    }
+    if(Controller1.ButtonB.pressing()) {
+      intake = 2;
+      spinvacmore = false;
+    }
+    if(Controller1.ButtonX.pressing()) {
+      intake = 3;
+      spinvacmore = true;
+    }
+    if(Controller1.ButtonY.pressing()) {
+      Vacuum.spinFor(-180, degrees);
+    }
+
+    if(intake == 1) {
+      useForwardVacuum(100);
+    }
+    if(intake == 2) {
+      useForwardVacuum(0);
+    }
+    if(intake == 3) {
+      useReverseVacuum(100);
+    }
+
+    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)) {
+      RobotLaunchVariable -= 1;
+      Controller1.Screen.print(RobotLaunchVariable);
+      wait(250, msec);
+    }
+    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 12)) {
+      RobotLaunchVariable += 1;
+      Controller1.Screen.print(RobotLaunchVariable);
+      wait(250, msec);
+    }
+    if(Controller1.ButtonUp.pressing() && Brain.timer(sec) - startTime > 95) {
+      P1.open();
     }
   }
+  wait(20, msec);
 }
 
-void autonAdr(void){
-  
-}
+// ******************** MAIN *******************
 
- void drive_only_UM(void){
-   if (gameMode == 3) {
-     Controller1.Screen.print("User");
-      wait(50, msec);
-      Controller1.Screen.clearScreen();
-  }
-  userDrive = 1;
-  while(userDrive == 1){
-    xdrive_user_control();
-    if (Controller1.ButtonR1.pressing()){
-      Flywheel.spin(forward, 3200, rpm);
-    }
-  }
- }
-
-void execute_intial_config(void){
-  gameMode = 0;
-  if (gameMode == 0){
-    Controller1.Screen.print("Pregame");
-    wait(50, msec);
-    Controller1.Screen.clearScreen();
-  }
-  setup_x_drive();
-  vacuum_configuration();
-  flywheel_config();
-  gameMode = 1;
-}
-//^^^This is some heavy abstraction however this makes it all work so don't forget it.
-// below is true competition main.
 int main() {
-   //Initializing Robot Configuration. DO NOT REMOVE!
-  vexcodeInit();
-  gameMode = 3;
- drive_only_UM();
-} //I have finally and unequivocally hit my breaking point and am now internally screeching.
-
-//  execute_intial_config();
-//  auton_mode();
-//  user_mode();
-//  drive_only_UM();
+  Competition.autonomous(autonomous);
+  Competition.drivercontrol(drivercontrol);
+  pre_auton();
+  while (true) {
+    wait(100, msec);
+  }
+}
