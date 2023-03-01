@@ -109,11 +109,11 @@ void turnRight(double amount) {
 
 // **************** VACUUM ********************
 
-void useForwardVacuum(int percent){
+void useForwardVacuum(int percent) {
   Vacuum.spin(forward, percent, pct);
 }
 
-void useReverseVacuum(int percent){
+void useReverseVacuum(int percent) {
   Vacuum.spin(reverse, percent, pct);
 }
 
@@ -134,7 +134,7 @@ void useLauncher() {
 void useForwardFlywheel() {
   Flywheel1.setStopping(coast);
   Flywheel2.setStopping(coast);
-  if (Flywheel2.velocity(rpm) < 325) {
+  if(Flywheel2.velocity(rpm) < 325) {
     Flywheel1.spin(reverse, 15, volt);
     Flywheel2.spin(forward, 15, volt);
   } else {
@@ -159,14 +159,19 @@ void useForwardFlywheelVariable() {
   Flywheel2.spin(forward, RobotLaunchVariable, volt);
 }
 
-// ***************** Distance *******************
-double findDistance(double x, double y){
+// **************** DISTANCE *****************
+double findDistance(double x, double y) {
   dist = (y - Cy) / (sin(atan((y - Cy)/(x - Cx))));
   return dist;
 }
 
-// ***************** obamatree *******************
+// *************** ODAMATREE *****************
 
+void updateOdometry() {
+  Delta_L = ((EncoderB.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
+  Delta_R = ((EncoderC.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
+  Delta_C = ((EncoderA.position(degrees))*M_PI/180)*(OdomWheelDiam/2);
+}
 
 double RectifyAngle(double Angle)
 {
@@ -404,28 +409,28 @@ void selectAuton() {
   int x = Brain.Screen.xPosition(); // get the x position of last touch of the screen
   int y = Brain.Screen.yPosition(); // get the y position of last touch of the screen
   // check to see if buttons were pressed
-  if (x >= 20 && x <= 70 && y >= 50 && y <= 100) { // select button pressed
+  if(x >= 20 && x <= 70 && y >= 50 && y <= 100) { // select button pressed
       auton = 0;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
-    } else if (x >= 120 && x <= 170 && y >= 50 && y <= 100) {
+    } else if(x >= 120 && x <= 170 && y >= 50 && y <= 100) {
       auton = 1;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
-    } else if (x >= 220 && x <= 270 && y >= 50 && y <= 100) {
+    } else if(x >= 220 && x <= 270 && y >= 50 && y <= 100) {
       auton = 2;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
-    } else if (x >= 320 && x <= 370 && y >= 50 && y <= 100) {
+    } else if(x >= 320 && x <= 370 && y >= 50 && y <= 100) {
       auton = 3;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
-    } else if (x >= 20 && x <= 70 && y >= 150 && y <= 200) {
+    } else if(x >= 20 && x <= 70 && y >= 150 && y <= 200) {
       auton = 4;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
-    } else if (x >= 120 && x <= 170 && y >= 150 && y <= 200) {
+    } else if(x >= 120 && x <= 170 && y >= 150 && y <= 200) {
       auton = 5;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
-    } else if (x >= 220 && x <= 270 && y >= 150 && y <= 200) {
+    } else if(x >= 220 && x <= 270 && y >= 150 && y <= 200) {
       auton = 6;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
-    } else if (x >= 320 && x <= 370 && y >= 150 && y <= 200) {
+    } else if(x >= 320 && x <= 370 && y >= 150 && y <= 200) {
       auton = 7;
       Brain.Screen.printAt(400, 200, "Auton: %d", auton);
   }
@@ -594,9 +599,9 @@ void drivercontrol(void) {
       Flywheel1.stop(coast);
       Flywheel2.stop(coast);
     }
-    if (Controller1.ButtonR2.pressing()) {
-      //useLauncher();
-      OdomSpinTo(45);
+    if(Controller1.ButtonR2.pressing()) {
+      useLauncher();
+      // OdomSpinTo(45);
     }
 
     
@@ -622,81 +627,77 @@ void drivercontrol(void) {
     // }
 
 
-   if(Controller1.ButtonR1.pressing()||Controller1.ButtonL1.pressing()){
-      if (Controller1.ButtonR1.pressing()) {
+   if(Controller1.ButtonR1.pressing()||Controller1.ButtonL1.pressing()) {
+      if(Controller1.ButtonR1.pressing()) {
         intake = 1;
         spinvacmore = false;
       } 
-      else if (Controller1.ButtonL1.pressing()) {
+      else if(Controller1.ButtonL1.pressing()) {
         intake = 3;
         spinvacmore = false;
       }
       
     }
-    else if (spinvacmore == false){
+    else if(spinvacmore == false) {
       intake = 2;
       spinvacmore = true;
-   }
-   
-    /*
     }
-    if (Controller1.ButtonR1.pressing()) {
-      Vacuum.spin(reverse, 100, pct);
-    } else if (!Controller1.ButtonR1.pressing() && !Controller1.ButtonL1.pressing()) {
-      Vacuum.spin(forward, 0, pct);
-    }
-    */
+    // if(Controller1.ButtonR1.pressing()) {
+    //   Vacuum.spin(reverse, 100, pct);
+    // } else if(!Controller1.ButtonR1.pressing() && !Controller1.ButtonL1.pressing()) {
+    //   Vacuum.spin(forward, 0, pct);
+    // }
     
-    if(Controller1.ButtonA.pressing()){
+    if(Controller1.ButtonA.pressing()) {
       intake = 1;
       spinvacmore = true;
     }
-    if(Controller1.ButtonB.pressing()){
+    if(Controller1.ButtonB.pressing()) {
       intake = 2;
       spinvacmore = false;
     }
-    if(Controller1.ButtonX.pressing()){
+    if(Controller1.ButtonX.pressing()) {
       intake = 3;
       spinvacmore = true;
     }
-    if(Controller1.ButtonY.pressing()){
+    if(Controller1.ButtonY.pressing()) {
       Vacuum.spinFor(-180, degrees);
     }
 
-    if(intake == 1){
+    if(intake == 1) {
       useForwardVacuum(100);
     }
-    if(intake == 2){
+    if(intake == 2) {
       useForwardVacuum(0);
     }
-    if(intake == 3){
+    if(intake == 3) {
       useReverseVacuum(100);
     }
 
-    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)){
-        RobotLaunchVariable -= 1;
-        Controller1.Screen.print(RobotLaunchVariable);
-        wait(250, msec);
+    if(Controller1.ButtonLeft.pressing() && (RobotLaunchVariable != 7)) {
+      RobotLaunchVariable -= 1;
+      Controller1.Screen.print(RobotLaunchVariable);
+      wait(250, msec);
     }
-    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 12)){
-        RobotLaunchVariable += 1;
-        Controller1.Screen.print(RobotLaunchVariable);
-        wait(250, msec);
+    if(Controller1.ButtonRight.pressing() && (RobotLaunchVariable != 12)) {
+      RobotLaunchVariable += 1;
+      Controller1.Screen.print(RobotLaunchVariable);
+      wait(250, msec);
     }
-    if(Controller1.ButtonUp.pressing() && Brain.timer(sec) - startTime > 95){
+    if(Controller1.ButtonUp.pressing() && Brain.timer(sec) - startTime > 95) {
       P1.open();
     }
-    if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/){
-      useReverseFlywheel();
-    Brain.Screen.print(EncoderA.position(degrees));
-    wait(.5, sec);
+    if(Controller1.ButtonDown.pressing() /*&& Brain.timer(sec) - startTime > 95*/) {
+      OdomMoveTo(0, 0, 0);
+      // useReverseFlywheel();
+      // Brain.Screen.print(EncoderA.position(degrees));
+      // wait(.5, sec);
     }
-
   }
   wait(20, msec);
 }
 
-//******************** MAIN *******************
+// ******************** MAIN *******************
 
 int main() {
   EncoderA.resetRotation();
