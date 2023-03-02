@@ -78,7 +78,37 @@ void StopAllChasis(void) {
   RightRear.stop(hold);
 }
 
+void moveForwardWait(double amount, double time) {
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
+  double d = 360 * amount / ((4 * M_PI));
+  LeftFront.spinFor(d, degrees, false);
+  LeftRear.spinFor(d, degrees, false);
+  RightFront.spinFor(d, degrees, false);
+  RightRear.spinFor(d, degrees, false);
+  wait(time, sec);
+}
+
+void moveBackwardsWait(double amount, double time) {
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
+  double d = 360 * amount / (4 * M_PI);
+  LeftFront.spinFor(-d, degrees, false);
+  LeftRear.spinFor(-d, degrees, false);
+  RightFront.spinFor(-d, degrees, false);
+  RightRear.spinFor(-d, degrees, false);
+  wait(time, sec);
+}
+
 void moveForward(double amount) {
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
   double d = 360 * amount / ((4 * M_PI));
   LeftFront.startSpinFor(d, degrees);
   LeftRear.startSpinFor(d, degrees);
@@ -87,6 +117,10 @@ void moveForward(double amount) {
 }
 
 void moveBackwards(double amount) {
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
   double d = 360 * amount / (4 * M_PI);
   LeftFront.startSpinFor(-d, degrees);
   LeftRear.startSpinFor(-d, degrees);
@@ -512,6 +546,8 @@ void autonomous(void) {
       obamatree();
       break;
     case 4:
+      Launch.spinTo(-90, degrees, false);
+      Launch.setPosition(0, degrees);
       Vacuum.setPosition(0, degrees);
       obamatree();
       LeftFront.setVelocity(100, percent);
@@ -521,36 +557,58 @@ void autonomous(void) {
       Vacuum.setVelocity(100, percent);
       Flywheel1.spin(reverse, 15, volt);
       Flywheel2.spin(forward, 15, volt);
-      moveForward(2);
-      wait(0.35, seconds);
-      Flywheel1.spin(reverse, 10.05, volt);
-      Flywheel2.spin(forward, 10.05, volt);
-      Vacuum.spinToPosition(-120, degrees);
+      LeftFront.setMaxTorque(25, percent);
+      RightFront.setMaxTorque(25, percent);
+      LeftRear.setMaxTorque(25, percent);
+      RightRear.setMaxTorque(25, percent);
+      moveForwardWait(3, 0.5);
+      Vacuum.spinToPosition(-180, degrees, false);
       wait(0.25, seconds);
       moveBackwards(3.5);
       obamatree();
-      wait(1.2, seconds);
-      useLauncher();
-      Flywheel1.spin(reverse, 15, volt);
-      Flywheel2.spin(forward, 15, volt);
+      LeftFront.setMaxTorque(100, percent);
+      RightFront.setMaxTorque(100, percent);
+      LeftRear.setMaxTorque(100, percent);
+      RightRear.setMaxTorque(100, percent);
+      OdomSpinTo(1.75);
+      OdomSpinTo(1.75);
       wait(0.5, seconds);
-      Flywheel1.spin(reverse, 10.05, volt);
-      Flywheel2.spin(forward, 10.05, volt);
+      Flywheel1.spin(reverse, 10.1, volt);
+      Flywheel2.spin(forward, 10.1, volt);
       wait(0.5, seconds);
       useLauncher();
-      Flywheel1.spin(reverse, 0, volt);
-      Flywheel2.spin(forward, 0, volt);
-      wait(0.1, seconds);
+      Flywheel1.spin(reverse, 10.2, volt);
+      Flywheel2.spin(forward, 10.2, volt);
+      wait(0.5, seconds);
+      Flywheel1.spin(reverse, 10.2, volt);
+      Flywheel2.spin(forward, 10.2, volt);
+      wait(0.5, seconds);
+      useLauncher();
+      Flywheel1.spin(reverse, 9.4, volt);
+      Flywheel2.spin(forward, 9.4, volt);
       //obamatree();
       //OdomSpinToCoordinate(18,34);
       //obamatree();
       Vacuum.spin(forward);
       obamatree();
-      OdomSpinTo(345);
-      moveForward(20);
+      OdomSpinTo(135);  //was 140
+      OdomSpinTo(135);
+      moveForward(25);
       wait(0.1, sec);
-      moveForward(20);
-      OdomSpinToCoordinate(18,34);
+      moveForward(25);
+      OdomSpinTo(31);
+      OdomSpinTo(31);
+      useLauncher();
+      Flywheel1.spin(reverse, 9.4, volt);
+      Flywheel2.spin(forward, 9.4, volt);
+      wait(1.0, seconds);
+      useLauncher();
+      Flywheel1.spin(reverse, 9.3, volt);
+      Flywheel2.spin(forward, 9.3, volt);
+      wait(1.0, seconds);
+      useLauncher();
+      Flywheel1.spin(reverse, 0, volt);
+      Flywheel2.spin(forward, 0, volt);
       break;
     case 5:
       // spin left roller, shoot, get more discs, shoot
