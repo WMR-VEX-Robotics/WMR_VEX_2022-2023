@@ -27,7 +27,7 @@ motor RightFront = motor(PORT10, ratio18_1, true);
 motor RightRear = motor(PORT9, ratio18_1, true);
 motor Vacuum = motor(PORT20, ratio18_1, true);
 motor Launch = motor(PORT3, ratio6_1, true);
-motor Flywheel1 = motor(PORT4, ratio6_1, false);
+motor Flywheel1 = motor(PORT2, ratio6_1, false);
 motor Flywheel2 = motor(PORT5, ratio6_1, true);
 pneumatics P1 = pneumatics(Brain.ThreeWirePort.G);
 
