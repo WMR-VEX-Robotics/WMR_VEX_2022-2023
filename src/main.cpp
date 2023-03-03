@@ -580,8 +580,8 @@ void autonomous(void) {
       OdomSpinTo(1.75);
       obamatree();
       wait(0.5, seconds);
-      Flywheel1.spin(reverse, 10.1, volt);
-      Flywheel2.spin(forward, 10.1, volt);
+      Flywheel1.spin(reverse, 10, volt);
+      Flywheel2.spin(forward, 10, volt);
       wait(0.5, seconds);
       useLauncher();
       Flywheel1.spin(reverse, 10.2, volt);
@@ -596,9 +596,9 @@ void autonomous(void) {
       Flywheel1.spin(reverse, 9.4, volt);
       Flywheel2.spin(forward, 9.4, volt);
       Vacuum.spin(forward);
-      OdomSpinTo(135);  //was 140
+      OdomSpinTo(132);  //was 140
       obamatree();
-      OdomSpinTo(135);
+      OdomSpinTo(132);
       obamatree();
       moveForward(25);
       obamatree();
@@ -706,9 +706,9 @@ void autonomous(void) {
       RightRear.setMaxTorque(100, percent);
 
       // launch preload
-      OdomSpinTo(1.75);
+      OdomSpinTo(270);
       obamatree();
-      OdomSpinTo(1.75);
+      OdomSpinTo(270);
       obamatree();
       wait(0.5, seconds);
       Flywheel1.spin(reverse, 10.1, volt);
@@ -741,9 +741,9 @@ void autonomous(void) {
       wait(0.1, sec);
       moveForward(25);
       obamatree();
-      OdomSpinTo(31);
+      OdomSpinTo(225);
       obamatree();
-      OdomSpinTo(31);
+      OdomSpinTo(225);
       obamatree();
 
       // launch stack of 3
