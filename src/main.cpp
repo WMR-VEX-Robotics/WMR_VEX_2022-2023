@@ -79,10 +79,10 @@ void StopAllChasis(void) {
 }
 
 void moveForwardWait(double amount, double time) {
-    LeftFront.setVelocity(75, percent);
-    RightFront.setVelocity(75, percent);
-    LeftRear.setVelocity(75, percent);
-    RightRear.setVelocity(75, percent);
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
   double d = 360 * amount / ((4 * M_PI));
   LeftFront.spinFor(d, degrees, false);
   LeftRear.spinFor(d, degrees, false);
@@ -92,10 +92,10 @@ void moveForwardWait(double amount, double time) {
 }
 
 void moveBackwardsWait(double amount, double time) {
-    LeftFront.setVelocity(75, percent);
-    RightFront.setVelocity(75, percent);
-    LeftRear.setVelocity(75, percent);
-    RightRear.setVelocity(75, percent);
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
   double d = 360 * amount / (4 * M_PI);
   LeftFront.spinFor(-d, degrees, false);
   LeftRear.spinFor(-d, degrees, false);
@@ -105,10 +105,10 @@ void moveBackwardsWait(double amount, double time) {
 }
 
 void moveForward(double amount) {
-    LeftFront.setVelocity(75, percent);
-    RightFront.setVelocity(75, percent);
-    LeftRear.setVelocity(75, percent);
-    RightRear.setVelocity(75, percent);
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
   double d = 360 * amount / ((4 * M_PI));
   LeftFront.startSpinFor(d, degrees);
   LeftRear.startSpinFor(d, degrees);
@@ -117,10 +117,10 @@ void moveForward(double amount) {
 }
 
 void moveBackwards(double amount) {
-    LeftFront.setVelocity(75, percent);
-    RightFront.setVelocity(75, percent);
-    LeftRear.setVelocity(75, percent);
-    RightRear.setVelocity(75, percent);
+    LeftFront.setVelocity(50, percent);
+    RightFront.setVelocity(50, percent);
+    LeftRear.setVelocity(50, percent);
+    RightRear.setVelocity(50, percent);
   double d = 360 * amount / (4 * M_PI);
   LeftFront.startSpinFor(-d, degrees);
   LeftRear.startSpinFor(-d, degrees);
@@ -238,10 +238,10 @@ void obamatree() {
   robot_odometry_coordinates[0] += (delta_fwd*cos(robot_odometry_coordinates[2]) - delta_strafe * sin(robot_odometry_coordinates[2]));
   robot_odometry_coordinates[1] += (delta_fwd*sin(robot_odometry_coordinates[2]) + delta_strafe * cos(robot_odometry_coordinates[2]));
 
-  // Brain.Screen.printAt(25, 125, "x: %f", robot_odometry_coordinates[0]);
-  // Brain.Screen.printAt(25, 150, "y: %f", robot_odometry_coordinates[1]);
-  // Brain.Screen.printAt(25, 175, "Theta: %f", RectifyAngle((-robot_odometry_coordinates[2]*180/M_PI)));
-  //Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry_coordinates[2]);
+  Brain.Screen.printAt(25, 125, "x: %f", robot_odometry_coordinates[0]);
+  Brain.Screen.printAt(25, 150, "y: %f", robot_odometry_coordinates[1]);
+  Brain.Screen.printAt(25, 175, "Theta: %f", RectifyAngle((-robot_odometry_coordinates[2]*180/M_PI)));
+  Brain.Screen.printAt(25, 175, "Theta: %f", robot_odometry_coordinates[2]);
 }
 
 double distanceBetweenTwoAngles (double angle1, double angle2) {
@@ -556,8 +556,8 @@ void autonomous(void) {
       LeftRear.setVelocity(100, percent);
       RightRear.setVelocity(100, percent);
       Vacuum.setVelocity(100, percent);
-      Flywheel1.spin(reverse, 10.5 , volt);
-      Flywheel2.spin(forward, 10.5, volt);
+      Flywheel1.spin(reverse, 10.45 , volt);
+      Flywheel2.spin(forward, 10.45, volt);
       LeftFront.setMaxTorque(25, percent);
       RightFront.setMaxTorque(25, percent);
       LeftRear.setMaxTorque(25, percent);
@@ -567,7 +567,7 @@ void autonomous(void) {
       Vacuum.spinToPosition(-180, degrees, false);
       wait(0.25, seconds);
       moveBackwards(4);
-      wait(2, sec);
+      wait(0.5, sec);
       obamatree();
       LeftFront.setMaxTorque(100, percent);
       RightFront.setMaxTorque(100, percent);
@@ -580,15 +580,15 @@ void autonomous(void) {
       OdomSpinTo(1.75);
       obamatree();
       wait(0.5, seconds);
-      Flywheel1.spin(reverse, 10.5, volt);
-      Flywheel2.spin(forward, 10.5, volt);
+      Flywheel1.spin(reverse, 10.45, volt);
+      Flywheel2.spin(forward, 10.45, volt);
       wait(0.75, seconds);
       useLauncher();
-      Flywheel1.spin(reverse, 10.55, volt);
-      Flywheel2.spin(forward, 10.55, volt);
+      Flywheel1.spin(reverse, 10.45, volt);
+      Flywheel2.spin(forward, 10.45, volt);
       wait(0.5, seconds);
-      Flywheel1.spin(reverse, 10.55, volt);
-      Flywheel2.spin(forward, 10.55, volt);
+      Flywheel1.spin(reverse, 10.45, volt);
+      Flywheel2.spin(forward, 10.45, volt);
       wait(0.5, seconds);
       useLauncher();
 
@@ -605,9 +605,9 @@ void autonomous(void) {
       wait(0.1, sec);
       moveForward(25);
       obamatree();
-      OdomSpinTo(33);
+      OdomSpinTo(24);
       obamatree();
-      OdomSpinTo(33);
+      OdomSpinTo(24);
       obamatree();
 
       // launch stack of 3
